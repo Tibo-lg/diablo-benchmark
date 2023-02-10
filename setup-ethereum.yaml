@@ -1,0 +1,8 @@
+interface: "ethereum"
+
+endpoints:
+
+  - addresses:
+    - 127.0.0.1:8545
+    tags:
+    - generic-region

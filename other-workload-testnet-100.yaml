@@ -1,0 +1,16 @@
+let:
+  - !loop &loc { sample: !location [ ".*" ] }
+  - &end { sample: !endpoint [ ".*" ] }
+  - !loop &acc { sample: !account { number: 10, stake: 1000 } }
+workloads:
+  - number: 1
+    client:
+      location: *loc
+      view: *end
+      behavior:
+        - load:
+            0: 10
+            30: 0
+          interaction: !transfer
+            from: *acc
+            to: *acc
