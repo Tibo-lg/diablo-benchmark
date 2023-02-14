@@ -519,7 +519,7 @@ func (this *directParameterProvider) getParams() (*parameters, error) {
 	var params parameters
 	var err error
 
-	params.chainId, err = this.client.NetworkID(ctx)
+	params.chainId, err = this.client.ChainID(ctx)
 	if err != nil {
 		return nil, err
 	}
