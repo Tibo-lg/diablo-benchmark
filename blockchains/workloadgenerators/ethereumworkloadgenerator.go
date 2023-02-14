@@ -208,17 +208,22 @@ func (e *EthereumWorkloadGenerator) CreateContractDeployTX(fromPrivKey []byte, c
 
 	// Check for the existence of the contract
 	if _, err := os.Stat(contractPath); err == nil {
-		// Path exists, compile the contract and prepare the transaction
-		// TODO: check the 'solc' string
-		contracts, err := compiler.CompileSolidity("", contractPath)
+
+		// TODO handle case where number of contracts is greater than one
+		file, err := os.ReadFile(contractPath)
 		if err != nil {
 			return []byte{}, err
 		}
+
+		contracts, err := compiler.ParseCombinedJSON(file, "", "", "", "")
+		if err != nil {
+			return []byte{}, err
+		}
+
 		if len(contracts) == 0 {
 			return nil, fmt.Errorf("no contracts to compile")
 		}
 
-		// TODO handle case where number of contracts is greater than one
 		var contract *compiler.Contract
 
 		if e.BenchConfig.ContractInfo.Name != "" {
@@ -655,7 +660,15 @@ func (e *EthereumWorkloadGenerator) CreateSignedTransaction(fromPrivKey []byte, 
 	gasLimit := uint64(300000)
 
 	// Make and sign the transaction
-	tx := types.NewTransaction(e.Nonces[strings.ToLower(addrFrom.String())], toConverted, value, gasLimit, e.SuggestedGasPrice, data)
+	tx := types.NewTx(&types.LegacyTx{
+		Nonce:    e.Nonces[strings.ToLower(addrFrom.String())],
+		To:       &toConverted,
+		Value:    value,
+		GasPrice: e.SuggestedGasPrice,
+		Gas:      gasLimit,
+		Data:     data,
+	})
+
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(e.ChainID), priv)
 	if err != nil {
 		return []byte{}, nil

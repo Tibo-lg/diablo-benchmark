@@ -7,3 +7,5 @@ localImplementation/*.tar.gz
 diablo
 
 wallet/
+
+**/combined.json

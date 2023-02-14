@@ -9,8 +9,9 @@ workloads:
       view: *end
       behavior:
         - load:
-            0: 10
-            30: 0
+            0: 1
+            5: 10
+            10: 1
           interaction: !transfer
             from: *acc
             to: *acc

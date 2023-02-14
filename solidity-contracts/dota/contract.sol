@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.5;
+pragma solidity >0.7.5;
 contract DecentralizedDota {
     int public number_of_players = 10;
     

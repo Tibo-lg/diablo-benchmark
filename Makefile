@@ -32,4 +32,7 @@ cleanall: clean
 format:
 	$(GOBIN) fmt ./...
 
+solidity:
+	./scripts/compile_solidity.sh
+
 .PHONY: default clean cleanall reqs diablo

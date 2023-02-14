@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common/compiler"
@@ -36,11 +37,27 @@ func (this *solidityCompiler) compile(name string) (*application, error) {
 
 	this.logger.Debugf("compile contract '%s'", name)
 
-	path = this.base + "/" + name + "/contract.sol"
+	path = this.base + "/" + name + "/combined.json"
 
-	this.logger.Tracef("compile contract source in '%s'", path)
+	this.logger.Tracef("load compiled contract in '%s'", path)
 
-	contracts, err = compiler.CompileSolidity("", path)
+	file, err := os.ReadFile(path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	sourcePath := this.base + "/" + name + "/contract.sol"
+
+	sourceBytes, err := os.ReadFile(sourcePath)
+
+	if err != nil {
+		return nil, err
+	}
+
+	sourceFile := string(sourceBytes)
+
+	contracts, err = compiler.ParseCombinedJSON(file, sourceFile, "", "", "")
 	if err != nil {
 		return nil, err
 	} else if len(contracts) < 1 {
