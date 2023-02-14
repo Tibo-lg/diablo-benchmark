@@ -1,30 +1,28 @@
 package core
 
-
 import (
 	"fmt"
 	"net"
 )
 
-
 type Nprimary struct {
-	NumSecondary   int
+	NumSecondary int
 
-	SetupPath      string
+	SetupPath string
 
-	BenchmarkPath  string
+	BenchmarkPath string
 
-	SystemMap      map[string]BlockchainInterface
+	SystemMap map[string]BlockchainInterface
 
-	ListenPort     int
+	ListenPort int
 
-	MasterSeed     int64
+	MasterSeed int64
 
-	MaxSkew        float64
+	MaxSkew float64
 
-	MaxDelay       float64
+	MaxDelay float64
 
-	Env            []string
+	Env []string
 }
 
 func (this *Nprimary) Run() (*Result, error) {
@@ -63,7 +61,7 @@ func (this *Nprimary) Run() (*Result, error) {
 
 	chain, ok = this.SystemMap[setup.sysname()]
 	if !ok {
-		return nil,fmt.Errorf("unknown interface '%s'",setup.sysname())
+		return nil, fmt.Errorf("unknown interface '%s'", setup.sysname())
 	}
 
 	logger = ExtendLogger("builder")
@@ -106,7 +104,7 @@ func (this *Nprimary) Run() (*Result, error) {
 	for i = range secondaries {
 		Tracef("wait for secondary %s", secondaries[i].addr())
 		secondaries[i].ready()
-	}	
+	}
 
 	Infof("start benchmark")
 	for i = range secondaries {
@@ -196,11 +194,10 @@ func (this *Nprimary) acceptSecondaries(setup setup) ([]*remoteSecondary, error)
 	return ret, nil
 }
 
-
 type remoteSecondary struct {
-	conn     *secondaryConn
-	params   *msgSecondaryParameters
-	clients  []*remoteClient
+	conn    *secondaryConn
+	params  *msgSecondaryParameters
+	clients []*remoteClient
 }
 
 func newRemoteSecondary(conn net.Conn, setup setup, primary *Nprimary) (*remoteSecondary, error) {
@@ -211,10 +208,10 @@ func newRemoteSecondary(conn net.Conn, setup setup, primary *Nprimary) (*remoteS
 	this.clients = make([]*remoteClient, 0)
 
 	this.params, err = this.conn.init(&msgPrimaryParameters{
-		sysname: setup.sysname(),
+		sysname:     setup.sysname(),
 		chainParams: setup.parameters(),
-		maxDelay: primary.MaxDelay,
-		maxSkew: primary.MaxSkew,
+		maxDelay:    primary.MaxDelay,
+		maxSkew:     primary.MaxSkew,
 	})
 
 	if err != nil {
@@ -233,7 +230,7 @@ func (this *remoteSecondary) createClient(kind string, view []string) (client, e
 
 	Tracef("prepare client %d (%s) on secondary %s", id, kind, this.addr())
 	err = this.conn.sendPrepare(&msgPrepareClient{
-		view: view,
+		view:  view,
 		index: id,
 	})
 
@@ -285,12 +282,12 @@ func (this *remoteSecondary) collect() (*SecondaryResult, error) {
 
 		msgIact, ok = msg.(*msgResultInteraction)
 		if ok {
-			Tracef("new interaction result for kind %d on " +
+			Tracef("new interaction result for kind %d on "+
 				"client %d for %s", msgIact.ikind,
 				msgIact.index, this.addr())
 
 			if msgIact.index >= len(this.clients) {
-				return nil, fmt.Errorf("invalid client id " +
+				return nil, fmt.Errorf("invalid client id "+
 					"%d for secondary %s", msgIact.index,
 					this.addr())
 			}
@@ -298,8 +295,8 @@ func (this *remoteSecondary) collect() (*SecondaryResult, error) {
 			client = this.clients[msgIact.index]
 
 			if msgIact.ikind >= len(client.kinds) {
-				return nil, fmt.Errorf("invalid interaction " +
-					"ikind %d for client %d on " +
+				return nil, fmt.Errorf("invalid interaction "+
+					"ikind %d for client %d on "+
 					"secondary %s", msgIact.ikind,
 					msgIact.index, this.addr())
 			}
@@ -312,7 +309,7 @@ func (this *remoteSecondary) collect() (*SecondaryResult, error) {
 			continue
 		}
 
-		return nil, fmt.Errorf("not implemented result message %v",msg)
+		return nil, fmt.Errorf("not implemented result message %v", msg)
 	}
 
 	Tracef("end of results for %s", this.addr())
@@ -344,24 +341,23 @@ func (this *remoteSecondary) Close() error {
 	return this.conn.Close()
 }
 
-
 type remoteClient struct {
-	conn     *secondaryConn
-	index    int
-	kind     string
-	maxTime  float64
-	kinds    []string
-	ikinds   map[string]int
+	conn    *secondaryConn
+	index   int
+	kind    string
+	maxTime float64
+	kinds   []string
+	ikinds  map[string]int
 }
 
 func newRemoteClient(conn *secondaryConn, index int, kind string) *remoteClient {
 	return &remoteClient{
-		conn: conn,
-		index: index,
-		kind: kind,
+		conn:    conn,
+		index:   index,
+		kind:    kind,
 		maxTime: 0,
-		kinds: make([]string, 0),
-		ikinds: make(map[string]int, 0),
+		kinds:   make([]string, 0),
+		ikinds:  make(map[string]int, 0),
 	}
 }
 
@@ -380,14 +376,14 @@ func (this *remoteClient) sendInteraction(kind string, time float64, encoded []b
 		this.ikinds[kind] = ikind
 	}
 
-	Tracef("prepare transaction %d (%s) for time %.3f on client %d " +
+	Tracef("prepare transaction %d (%s) for time %.3f on client %d "+
 		"secondary %s", ikind, kind, time, this.index,
 		this.conn.addr())
 
 	return this.conn.sendPrepare(&msgPrepareInteraction{
-		index: this.index,
-		ikind: ikind,
-		time: time,
+		index:   this.index,
+		ikind:   ikind,
+		time:    time,
 		payload: encoded,
 	})
 }

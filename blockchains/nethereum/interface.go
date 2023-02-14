@@ -1,6 +1,5 @@
 package nethereum
 
-
 import (
 	"context"
 	"crypto/ecdsa"
@@ -12,11 +11,10 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
-
 
 type BlockchainInterface struct {
 }
@@ -65,7 +63,7 @@ func (this *BlockchainInterface) Builder(params map[string]string, env []string,
 
 		if key == "contracts" {
 			for _, value = range values {
-				logger.Debugf("with contracts from '%s'",value)
+				logger.Debugf("with contracts from '%s'", value)
 				builder.addCompiler(value)
 			}
 
@@ -77,7 +75,6 @@ func (this *BlockchainInterface) Builder(params map[string]string, env []string,
 
 	return builder, nil
 }
-
 
 func parseEnvmap(env []string) (map[string][]string, error) {
 	var ret map[string][]string = make(map[string][]string)
@@ -94,7 +91,7 @@ func parseEnvmap(env []string) (map[string][]string, error) {
 		}
 
 		key = element[:eqindex]
-		value = element[eqindex + 1:]
+		value = element[eqindex+1:]
 
 		values, found = ret[key]
 		if !found {
@@ -109,10 +106,9 @@ func parseEnvmap(env []string) (map[string][]string, error) {
 	return ret, nil
 }
 
-
 type yamlAccount struct {
-	Address  string  `yaml:"address"`
-	Private  string  `yaml:"private"`
+	Address string `yaml:"address"`
+	Private string `yaml:"private"`
 }
 
 func addPremadeAccounts(builder *BlockchainBuilder, path string) error {
@@ -162,7 +158,6 @@ func addPremadeAccounts(builder *BlockchainBuilder, path string) error {
 
 	return nil
 }
-
 
 func (this *BlockchainInterface) Client(params map[string]string, env, view []string, logger core.Logger) (core.BlockchainClient, error) {
 	var ctx context.Context = context.Background()

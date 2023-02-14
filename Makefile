@@ -29,4 +29,7 @@ cleanall: clean
 	-chmod -R 700 $(PWD)/.go
 	-rm -rf $(PWD)/.go
 
+format:
+	$(GOBIN) fmt ./...
+
 .PHONY: default clean cleanall reqs diablo

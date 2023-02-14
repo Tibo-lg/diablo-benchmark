@@ -1,6 +1,5 @@
 package diem
 
-
 import (
 	"crypto/ed25519"
 	"encoding/hex"
@@ -15,18 +14,15 @@ import (
 	"github.com/diem/client-sdk-go/stdlib"
 )
 
-
 const chainId = 4
 const currency = "XUS"
 const expirationDelay = 86400 * time.Second
 
-
 type blockchain struct {
-	clients      []diemclient.Client
-	accounts     []*diemkeys.Keys
-	waitingTime  time.Duration
+	clients     []diemclient.Client
+	accounts    []*diemkeys.Keys
+	waitingTime time.Duration
 }
-
 
 func newBlockchain(conf *config) (*blockchain, error) {
 	var dsk *diemkeys.Ed25519PrivateKey
@@ -39,14 +35,12 @@ func newBlockchain(conf *config) (*blockchain, error) {
 	var err error
 	var i int
 
-
 	ret.clients = make([]diemclient.Client, conf.size())
 
 	for i = 0; i < conf.size(); i++ {
 		addr = fmt.Sprintf("http://%s", conf.getNodeUrl(i))
 		ret.clients[i] = diemclient.New(chainId, addr)
 	}
-
 
 	ret.accounts = make([]*diemkeys.Keys, conf.population())
 

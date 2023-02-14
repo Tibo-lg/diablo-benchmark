@@ -54,9 +54,9 @@ func (e *EthereumWorkloadGenerator) NewGenerator(chainConfig *configs.ChainConfi
 // This is the function that can be used to create and generate a genesis block
 // as well as deliver the genesis block to the blockchain nodes and run the
 // setup command. By the end of this function, there should be:
-//  * Blockchain network of nodes running the blockchain
-//  * Valid genesis block running on the blockchains
-//  * List of accounts that are funded and known
+//   - Blockchain network of nodes running the blockchain
+//   - Valid genesis block running on the blockchains
+//   - List of accounts that are funded and known
 //
 // The main aspect of the blockchain setup is to provide a step to start the
 // blockchain nodes
@@ -73,8 +73,8 @@ func (e *EthereumWorkloadGenerator) BlockchainSetup() error {
 }
 
 type noncePair struct {
-	account  string
-	nonce    uint64
+	account string
+	nonce   uint64
 }
 
 // InitParams sets initial aspects such as the suggested gas price and sets up a small connection to get information from the blockchain.
@@ -787,7 +787,7 @@ func (e *EthereumWorkloadGenerator) generateContractWorkload() (Workload, error)
 	for idx, funcInfo := range e.BenchConfig.ContractInfo.Functions {
 		// add index to functionsToCreate
 		var funcRatio int
-		if idx == len(e.BenchConfig.ContractInfo.Functions) - 1 {
+		if idx == len(e.BenchConfig.ContractInfo.Functions)-1 {
 			funcRatio = numberOfTransactions - len(functionsToCreatePerThread)
 		} else {
 			funcRatio = (funcInfo.Ratio * numberOfTransactions) / 100

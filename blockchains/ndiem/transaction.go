@@ -1,6 +1,5 @@
 package ndiem
 
-
 import (
 	"diablo-benchmark/util"
 	"encoding/binary"
@@ -15,7 +14,6 @@ import (
 	"github.com/diem/client-sdk-go/stdlib"
 )
 
-
 const (
 	transaction_type_transfer uint8 = 0
 	transaction_type_invoke   uint8 = 1
@@ -27,15 +25,13 @@ const (
 	expirationDelay = 86400 * time.Second
 )
 
-
 type transaction interface {
 	getSigned() (*diemtypes.SignedTransaction, error)
 	getName() string
 }
 
-
 type outerTransaction struct {
-	inner  virtualTransaction
+	inner virtualTransaction
 }
 
 func (this *outerTransaction) getSigned() (*diemtypes.SignedTransaction, error) {
@@ -67,7 +63,7 @@ func decodeTransaction(src io.Reader) (*outerTransaction, error) {
 		return nil, err
 	}
 
-	switch (txtype) {
+	switch txtype {
 	case transaction_type_transfer:
 		inner, err = decodeTransferTransaction(src)
 	case transaction_type_invoke:
@@ -80,25 +76,23 @@ func decodeTransaction(src io.Reader) (*outerTransaction, error) {
 		return nil, err
 	}
 
-	return &outerTransaction{ inner }, nil
+	return &outerTransaction{inner}, nil
 }
-
 
 type virtualTransaction interface {
 	getSigned() (virtualTransaction, *diemtypes.SignedTransaction, error)
 	getName() string
 }
 
-
 type signedTransaction struct {
-	inner  *diemtypes.SignedTransaction
-	name   string
+	inner *diemtypes.SignedTransaction
+	name  string
 }
 
 func newSignedTransaction(inner *diemtypes.SignedTransaction, name string) *signedTransaction {
 	return &signedTransaction{
 		inner: inner,
-		name: name,
+		name:  name,
 	}
 }
 
@@ -110,26 +104,25 @@ func (this *signedTransaction) getName() string {
 	return this.name
 }
 
-
 type unsignedTransaction struct {
-	from            *diemkeys.Keys
-	to              diemtypes.AccountAddress
-	sequence        uint64
-	payload         diemtypes.TransactionPayload
-	maxGasAmount    uint64
-	gasUnitPrice    uint64
-	expirationTime  uint64
-	chainId         byte
-	name            string
+	from           *diemkeys.Keys
+	to             diemtypes.AccountAddress
+	sequence       uint64
+	payload        diemtypes.TransactionPayload
+	maxGasAmount   uint64
+	gasUnitPrice   uint64
+	expirationTime uint64
+	chainId        byte
+	name           string
 }
 
 func newUnsignedTransaction(from *diemkeys.Keys, to diemtypes.AccountAddress, sequence uint64, payload diemtypes.TransactionPayload, name string) *unsignedTransaction {
 	return &unsignedTransaction{
-		from: from,
-		to: to,
+		from:     from,
+		to:       to,
 		sequence: sequence,
-		payload: payload,
-		name: name,
+		payload:  payload,
+		name:     name,
 	}
 }
 
@@ -150,19 +143,18 @@ func (this *unsignedTransaction) getName() string {
 	return this.name
 }
 
-
 type transferTransaction struct {
-	from      ed25519.PrivateKey
-	to        diemtypes.AccountAddress
-	amount    uint64
-	sequence  uint64
+	from     ed25519.PrivateKey
+	to       diemtypes.AccountAddress
+	amount   uint64
+	sequence uint64
 }
 
 func newTransferTransaction(from ed25519.PrivateKey, to diemtypes.AccountAddress, amount, sequence uint64) *transferTransaction {
 	return &transferTransaction{
-		from: from,
-		to: to,
-		amount: amount,
+		from:     from,
+		to:       to,
+		amount:   amount,
 		sequence: sequence,
 	}
 }
@@ -224,8 +216,7 @@ func (this *transferTransaction) getSigned() (virtualTransaction, *diemtypes.Sig
 	var script diemtypes.Script
 
 	from = diemkeys.NewKeysFromPublicAndPrivateKeys(
-		diemkeys.NewEd25519PublicKey(this.from.Public().
-			(ed25519.PublicKey)),
+		diemkeys.NewEd25519PublicKey(this.from.Public().(ed25519.PublicKey)),
 		diemkeys.NewEd25519PrivateKey(this.from))
 
 	script = stdlib.EncodePeerToPeerWithMetadataScript(
@@ -243,17 +234,16 @@ func (this *transferTransaction) getName() string {
 		seed[2], seed[3], seed[4], seed[5], this.sequence)
 }
 
-
 type deployContractTransaction struct {
-	from      ed25519.PrivateKey
-	code      []byte
-	sequence  uint64
+	from     ed25519.PrivateKey
+	code     []byte
+	sequence uint64
 }
 
 func newDeployContractTransaction(from ed25519.PrivateKey, code []byte, sequence uint64) *deployContractTransaction {
 	return &deployContractTransaction{
-		from: from,
-		code: code,
+		from:     from,
+		code:     code,
 		sequence: sequence,
 	}
 }
@@ -263,11 +253,10 @@ func (this *deployContractTransaction) getSigned() (virtualTransaction, *diemtyp
 	var module diemtypes.Module
 
 	from = diemkeys.NewKeysFromPublicAndPrivateKeys(
-		diemkeys.NewEd25519PublicKey(this.from.Public().
-			(ed25519.PublicKey)),
+		diemkeys.NewEd25519PublicKey(this.from.Public().(ed25519.PublicKey)),
 		diemkeys.NewEd25519PrivateKey(this.from))
 
-	module = diemtypes.Module{ this.code }
+	module = diemtypes.Module{this.code}
 
 	return newUnsignedTransaction(from, from.AccountAddress(),
 		this.sequence, &diemtypes.TransactionPayload__Module{module},
@@ -281,19 +270,18 @@ func (this *deployContractTransaction) getName() string {
 		seed[2], seed[3], seed[4], seed[5], this.sequence)
 }
 
-
 type invokeTransaction struct {
-	from      ed25519.PrivateKey
-	code      []byte
-	args      []diemtypes.TransactionArgument
-	sequence  uint64
+	from     ed25519.PrivateKey
+	code     []byte
+	args     []diemtypes.TransactionArgument
+	sequence uint64
 }
 
 func newInvokeTransaction(from ed25519.PrivateKey, code []byte, args []diemtypes.TransactionArgument, sequence uint64) *invokeTransaction {
 	return &invokeTransaction{
-		from: from,
-		code: code,
-		args: args,
+		from:     from,
+		code:     code,
+		args:     args,
 		sequence: sequence,
 	}
 }
@@ -362,7 +350,7 @@ func (this *invokeTransaction) encode(dest io.Writer) error {
 		if err != nil {
 			return err
 		} else if len(bargs[i]) > 65535 {
-			return fmt.Errorf("invoke arguments %d is too long " +
+			return fmt.Errorf("invoke arguments %d is too long "+
 				"(%d bytes)", len(bargs[i]))
 		}
 	}
@@ -388,14 +376,13 @@ func (this *invokeTransaction) getSigned() (virtualTransaction, *diemtypes.Signe
 	var from *diemkeys.Keys
 
 	from = diemkeys.NewKeysFromPublicAndPrivateKeys(
-		diemkeys.NewEd25519PublicKey(this.from.Public().
-			(ed25519.PublicKey)),
+		diemkeys.NewEd25519PublicKey(this.from.Public().(ed25519.PublicKey)),
 		diemkeys.NewEd25519PrivateKey(this.from))
 
 	script = diemtypes.Script{
-		Code: this.code,
+		Code:   this.code,
 		TyArgs: []diemtypes.TypeTag{},
-		Args: this.args,
+		Args:   this.args,
 	}
 
 	return newUnsignedTransaction(from, from.AccountAddress(),

@@ -1,23 +1,21 @@
 package core
 
-
 import (
 	"fmt"
-	"regexp"
 	"math/rand"
+	"regexp"
 )
 
-
 type intSample struct {
-	offset  int
-	size    int
+	offset int
+	size   int
 }
 
 func newIntSample(from, to int) *intSample {
 	if to < from {
-		return &intSample{ offset: from, size: 0 }
+		return &intSample{offset: from, size: 0}
 	} else {
-		return &intSample{ offset: from, size: to - from + 1 }
+		return &intSample{offset: from, size: to - from + 1}
 	}
 }
 
@@ -57,23 +55,22 @@ func (this *intSampleFactory) Instance(expr BenchmarkExpression) (Sample, error)
 	return newIntSample(from, to), nil
 }
 
-
 type floatSample struct {
-	offset     int
-	size       int
-	precision  float64
+	offset    int
+	size      int
+	precision float64
 }
 
 func newFloatSample(from, to, precision float64) *floatSample {
 	if to < from {
 		return &floatSample{
-			offset: int(from),
-			size: 0,
-			precision: precision, }
+			offset:    int(from),
+			size:      0,
+			precision: precision}
 	} else {
 		return &floatSample{
-			offset: int(from / precision),
-			size: int((to - from) / precision),
+			offset:    int(from / precision),
+			size:      int((to - from) / precision),
 			precision: precision,
 		}
 	}
@@ -84,13 +81,12 @@ func (this *floatSample) Size() int {
 }
 
 func (this *floatSample) GetFloat(index int) float64 {
-	return (float64(this.offset + index) * this.precision)
+	return (float64(this.offset+index) * this.precision)
 }
 
 func (this *floatSample) Get(index int) interface{} {
 	return this.GetFloat(index)
 }
-
 
 type floatSampleFactory struct {
 }
@@ -125,7 +121,7 @@ func (this *floatSampleFactory) Instance(expr BenchmarkExpression) (Sample, erro
 
 		for {
 			if precision == 0 {
-				return nil, fmt.Errorf("%s: failed to " +
+				return nil, fmt.Errorf("%s: failed to "+
 					"infer precision", expr.FullPosition())
 			}
 
@@ -149,7 +145,6 @@ func (this *floatSampleFactory) Instance(expr BenchmarkExpression) (Sample, erro
 	return newFloatSample(from, to, precision), nil
 }
 
-
 type elementSample struct {
 	elements []interface{}
 }
@@ -167,7 +162,6 @@ func (this *elementSample) Size() int {
 func (this *elementSample) Get(index int) interface{} {
 	return this.elements[index]
 }
-
 
 type taggedElement interface {
 	tags() []string
@@ -245,12 +239,11 @@ func newFilteredElementSample(filters []*regexp.Regexp, telements []taggedElemen
 	return newElementSample(elements)
 }
 
-
 type uniformDistribution struct {
-	rtype   VariableType
-	rand    *rand.Rand
-	size    int
-	values  []int
+	rtype  VariableType
+	rand   *rand.Rand
+	size   int
+	values []int
 }
 
 func newUniformDistribution(size int, seed int64, rtype VariableType) *uniformDistribution {
@@ -267,9 +260,9 @@ func newUniformDistribution(size int, seed int64, rtype VariableType) *uniformDi
 	}
 
 	return &uniformDistribution{
-		rtype: rtype,
-		rand: rand.New(rand.NewSource(seed)),
-		size: size,
+		rtype:  rtype,
+		rand:   rand.New(rand.NewSource(seed)),
+		size:   size,
 		values: values,
 	}
 }
@@ -290,8 +283,8 @@ func (this *uniformDistribution) Select() (int, error) {
 	}
 
 	if this.rtype != TypeRegular {
-		this.values[index] = this.values[this.size - 1]
-		this.values[this.size - 1] = value
+		this.values[index] = this.values[this.size-1]
+		this.values[this.size-1] = value
 		this.size -= 1
 
 		if this.size == 0 {
@@ -327,13 +320,12 @@ func (this *uniformDistribution) Copy(seed int64, rtype VariableType) Distributi
 	}
 
 	return &uniformDistribution{
-		rtype: rtype,
-		rand: rand.New(rand.NewSource(seed)),
-		size: this.size,
+		rtype:  rtype,
+		rand:   rand.New(rand.NewSource(seed)),
+		size:   this.size,
 		values: values,
 	}
 }
-
 
 type uniformRandom struct {
 }
@@ -346,7 +338,6 @@ func (this *uniformRandom) Instance(size int, seed int64, rtype VariableType) Di
 	return newUniformDistribution(size, seed, rtype)
 }
 
-
 type uniformRandomFactory struct {
 }
 
@@ -357,7 +348,6 @@ func newUniformRandomFactory() *uniformRandomFactory {
 func (this *uniformRandomFactory) instance(BenchmarkExpression) (Random, error) {
 	return &uniformRandom{}, nil
 }
-
 
 type normalRandomFactory struct {
 }

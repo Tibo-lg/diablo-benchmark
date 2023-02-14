@@ -1,21 +1,19 @@
 package core
 
-
 import (
 	"bufio"
 	"net"
 )
 
-
 type primaryConn struct {
-	conn    net.Conn
-	reader  *bufio.Reader
-	writer  *bufio.Writer
+	conn   net.Conn
+	reader *bufio.Reader
+	writer *bufio.Writer
 }
 
 func newPrimaryConn(conn net.Conn) *primaryConn {
 	return &primaryConn{
-		conn: conn,
+		conn:   conn,
 		reader: bufio.NewReader(conn),
 		writer: bufio.NewWriter(conn),
 	}
@@ -86,16 +84,15 @@ func (this *primaryConn) Close() error {
 	return this.conn.Close()
 }
 
-
 type secondaryConn struct {
-	conn    net.Conn
-	reader  *bufio.Reader
-	writer  *bufio.Writer
+	conn   net.Conn
+	reader *bufio.Reader
+	writer *bufio.Writer
 }
 
 func newSecondaryConn(conn net.Conn) *secondaryConn {
 	return &secondaryConn{
-		conn: conn,
+		conn:   conn,
 		reader: bufio.NewReader(conn),
 		writer: bufio.NewWriter(conn),
 	}

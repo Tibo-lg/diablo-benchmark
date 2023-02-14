@@ -21,7 +21,7 @@ type FabricWorkloadGenerator struct {
 	GenericWorkloadGenerator
 }
 
-//NewGenerator returns a new instance of the generator
+// NewGenerator returns a new instance of the generator
 func (f FabricWorkloadGenerator) NewGenerator(chainConfig *configs.ChainConfig, benchConfig *configs.BenchConfig) WorkloadGenerator {
 	return &FabricWorkloadGenerator{
 		BenchConfig: benchConfig,
@@ -29,41 +29,41 @@ func (f FabricWorkloadGenerator) NewGenerator(chainConfig *configs.ChainConfig, 
 	}
 }
 
-//BlockchainSetup ,in theory, should create all artifacts and genesis blocks necessary
+// BlockchainSetup ,in theory, should create all artifacts and genesis blocks necessary
 // and spin up the network
 // DISCLAIMER: for now we assume that the fabric network has already been set up before
 func (f FabricWorkloadGenerator) BlockchainSetup() error {
 	return nil
 }
 
-//InitParams sets up any needed parameters not initialized at construction
+// InitParams sets up any needed parameters not initialized at construction
 func (f FabricWorkloadGenerator) InitParams() error {
 	return nil
 }
 
-//CreateAccount is used to create a generic account
-//(NOT NEEDED IN FABRIC) the users are already setup in the inital config
+// CreateAccount is used to create a generic account
+// (NOT NEEDED IN FABRIC) the users are already setup in the inital config
 // as Hyperledger Fabric is a permissioned blockchain
 func (f FabricWorkloadGenerator) CreateAccount() (interface{}, error) {
 	return nil, nil
 }
 
-//DeployContract packages and installs the chaincode on the network
-//DISCLAIMER: for now we assume that the fabric network has already been set up before
+// DeployContract packages and installs the chaincode on the network
+// DISCLAIMER: for now we assume that the fabric network has already been set up before
 func (f FabricWorkloadGenerator) DeployContract(fromPrivKey []byte, contractPath string) (string, error) {
 	return "not implemented", nil
 }
 
-//CreateContractDeployTX creates a transaction to deploy the smart contract
-//(NOT NEEDED IN FABRIC) contract deployment is not something useful to
+// CreateContractDeployTX creates a transaction to deploy the smart contract
+// (NOT NEEDED IN FABRIC) contract deployment is not something useful to
 // be benchmarked in a Hyperledger Fabric implementation as it is a permissioned
 // blockchain and contract deployment is something agreed upon by organisations and
-//not done regularly enough to hinder throughput (usually done during while low traffic)
+// not done regularly enough to hinder throughput (usually done during while low traffic)
 func (f FabricWorkloadGenerator) CreateContractDeployTX(fromPrivKey []byte, contractPath string) ([]byte, error) {
 	return nil, nil
 }
 
-//CreateInteractionTX main method to create transaction bytes for the workload
+// CreateInteractionTX main method to create transaction bytes for the workload
 func (f FabricWorkloadGenerator) CreateInteractionTX(fromPrivKey []byte, functionType string, functionName string, contractParams []configs.ContractParam, value string) ([]byte, error) {
 
 	var tx types.FabricTX
@@ -91,15 +91,15 @@ func (f FabricWorkloadGenerator) CreateInteractionTX(fromPrivKey []byte, functio
 	return b, nil
 }
 
-//CreateSignedTransaction forms a signed transaction
-//and returns bytes to be sent by the 'SendRawTransaction' call.
-//(NOT NEEDED IN FABRIC) all signing is done in the client interface
+// CreateSignedTransaction forms a signed transaction
+// and returns bytes to be sent by the 'SendRawTransaction' call.
+// (NOT NEEDED IN FABRIC) all signing is done in the client interface
 // because users are already defined in the bench config
 func (f FabricWorkloadGenerator) CreateSignedTransaction(fromPrivKey []byte, toAddress string, value *big.Int, data []byte) ([]byte, error) {
 	return nil, nil
 }
 
-//generateTestWorkload generates a test workload given the test benchmark config and the blockchain config files
+// generateTestWorkload generates a test workload given the test benchmark config and the blockchain config files
 // returns: Workload ([secondary][threads][time][tx]) -> [][][][]byte
 func (f FabricWorkloadGenerator) generateTestWorkload() (Workload, error) {
 
@@ -242,7 +242,7 @@ func (f *FabricWorkloadGenerator) generatePremadeWorkload() (Workload, error) {
 	return fullWorkload, nil
 }
 
-//generateTestWorkload generates a test workload given the test benchmark config and the blockchain config files
+// generateTestWorkload generates a test workload given the test benchmark config and the blockchain config files
 // returns: Workload ([secondary][threads][time][tx]) -> [][][][]byte
 func (f FabricWorkloadGenerator) generateAviationWorkload() (Workload, error) {
 
@@ -455,7 +455,7 @@ func (f FabricWorkloadGenerator) generateContentionWorkload() (Workload, error) 
 						otherParams := functionToInvoke.Params
 
 						//id = 0, to simulate contention on asset 0
-						otherParams[0].Value = strconv.FormatInt(0,10)
+						otherParams[0].Value = strconv.FormatInt(0, 10)
 						// value
 						otherParams[1].Value = strconv.FormatInt(txID, 10)
 						params = append(params, otherParams...)
@@ -487,7 +487,7 @@ func (f FabricWorkloadGenerator) generateContentionWorkload() (Workload, error) 
 
 }
 
-//GenerateWorkload generates a workload given the benchmark config and the blockchain config files
+// GenerateWorkload generates a workload given the benchmark config and the blockchain config files
 // returns: Workload ([secondary][threads][time][tx]) -> [][][][]byte
 func (f FabricWorkloadGenerator) GenerateWorkload() (Workload, error) {
 

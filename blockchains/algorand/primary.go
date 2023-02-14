@@ -1,6 +1,5 @@
 package algorand
 
-
 import (
 	"fmt"
 	"io/ioutil"
@@ -12,14 +11,12 @@ import (
 	"diablo-benchmark/core/workload"
 )
 
-
 type Primary struct {
-	benchConfig  *configs.BenchConfig                  // parsed bench.yaml
-	intervals    []int             // precomputed tx/thread for each second
-	blockchain   *Blockchain              // interface to actual blockchain
-	appid        uint64            // appId of the deployed contract if any
+	benchConfig *configs.BenchConfig // parsed bench.yaml
+	intervals   []int                // precomputed tx/thread for each second
+	blockchain  *Blockchain          // interface to actual blockchain
+	appid       uint64               // appId of the deployed contract if any
 }
-
 
 func NewController() *Primary {
 	return &Primary{}
@@ -47,7 +44,6 @@ func (this *Primary) Init(c *configs.ChainConfig, b *configs.BenchConfig, txs []
 	return nil
 }
 
-
 func (this *Primary) deployContract() error {
 	var path string = this.benchConfig.ContractInfo.Path
 	var source []byte
@@ -58,7 +54,7 @@ func (this *Primary) deployContract() error {
 		return err
 	}
 
-	this.appid, err = this.blockchain.DeployContract(0,0, source, 1,1,1,1)
+	this.appid, err = this.blockchain.DeployContract(0, 0, source, 1, 1, 1, 1)
 	if err != nil {
 		return err
 	}
@@ -80,7 +76,6 @@ func (this *Primary) Setup() error {
 
 	return nil
 }
-
 
 const simpleTransactionAmount = 10000
 
@@ -148,7 +143,7 @@ func (this *Primary) newNoOpTransaction(endpoint, from, uid int, args [][]byte) 
 
 	appid = this.appid
 	note = makeTransactionNote(uid)
-	raw, err = this.blockchain.PrepareNoOpTransaction(from,appid,args,note)
+	raw, err = this.blockchain.PrepareNoOpTransaction(from, appid, args, note)
 	if err != nil {
 		return tx, err
 	}

@@ -1,18 +1,16 @@
 package util
 
-
 import (
 	"fmt"
 	"io"
 	"os/exec"
 )
 
-
 type ServiceProcess struct {
-	cmd     *exec.Cmd
-	stdin   chan<- []byte
-	stdout  <-chan []byte
-	out     []byte
+	cmd    *exec.Cmd
+	stdin  chan<- []byte
+	stdout <-chan []byte
+	out    []byte
 }
 
 func StartServiceProcess(name string, args ...string) (*ServiceProcess, error) {
@@ -46,10 +44,10 @@ func StartServiceProcess(name string, args ...string) (*ServiceProcess, error) {
 	go readToChannel(opipe, out)
 
 	return &ServiceProcess{
-		cmd: cmd,
-		stdin: in,
+		cmd:    cmd,
+		stdin:  in,
 		stdout: out,
-		out: nil,
+		out:    nil,
 	}, nil
 }
 
@@ -98,7 +96,8 @@ func writeFromChannel(input <-chan []byte, writer io.WriteCloser) {
 
 	go forwardFromChannel(wchan, writer)
 
-	outer: for {
+outer:
+	for {
 		if acc == nil {
 			data, ok = <-input
 			if !ok {
@@ -109,7 +108,8 @@ func writeFromChannel(input <-chan []byte, writer io.WriteCloser) {
 			acc = nil
 		}
 
-		inner: for {
+	inner:
+		for {
 			select {
 			case wchan <- data:
 				break inner
@@ -151,7 +151,7 @@ func readToChannel(reader io.Reader, output chan<- []byte) {
 			output <- data[:i]
 
 			if i == len(data) {
-				data = make([]byte, 2 * len(data))
+				data = make([]byte, 2*len(data))
 			} else {
 				data = make([]byte, len(data))
 			}

@@ -1,6 +1,5 @@
 package nethereum
 
-
 import (
 	"bufio"
 	"diablo-benchmark/core"
@@ -14,16 +13,15 @@ import (
 	"github.com/ethereum/go-ethereum/common/compiler"
 )
 
-
 type solidityCompiler struct {
-	logger  core.Logger
-	base    string
+	logger core.Logger
+	base   string
 }
 
 func newSolidityCompiler(logger core.Logger, base string) *solidityCompiler {
 	return &solidityCompiler{
 		logger: logger,
-		base: base,
+		base:   base,
 	}
 }
 
@@ -85,19 +83,19 @@ func (this *solidityCompiler) compile(name string) (*application, error) {
 }
 
 type application struct {
-	logger   core.Logger
-	text     []byte
-	entries  map[string][]byte
-	parser   *util.ServiceProcess
-	scanner  *bufio.Scanner
+	logger  core.Logger
+	text    []byte
+	entries map[string][]byte
+	parser  *util.ServiceProcess
+	scanner *bufio.Scanner
 }
 
 func newApplication(logger core.Logger, text []byte, entries map[string][]byte, parser *util.ServiceProcess) *application {
 	return &application{
-		logger: logger,
-		text: text,
+		logger:  logger,
+		text:    text,
 		entries: entries,
-		parser: parser,
+		parser:  parser,
 		scanner: bufio.NewScanner(parser),
 	}
 }
@@ -108,7 +106,7 @@ func (this *application) arguments(function string) ([]byte, error) {
 	var found bool
 	var err error
 
-	_, err = io.WriteString(this.parser, function + "\n")
+	_, err = io.WriteString(this.parser, function+"\n")
 	if err != nil {
 		return nil, err
 	}

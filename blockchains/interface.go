@@ -1,18 +1,15 @@
 package blockchain
 
-
 import (
 	"diablo-benchmark/core/configs"
 	"diablo-benchmark/core/results"
 	"diablo-benchmark/core/workload"
 )
 
-
 // This runs on the primary node.
 // Its goal is to prepare the blockchain for the incoming benchmark by putting
 // it in a desired state and by planing the workload to send during the
 // benchmark.
-//
 type Controller interface {
 	// Initialize this Controller with the configuration of the current
 	// blockchain and the incoming benchmark.
@@ -50,13 +47,11 @@ type Controller interface {
 	Generate() (*workload.Workload, error)
 }
 
-
 // This runs on each secondary, once per worker thread.
 // Its goal is to execute the benchmark workload and collect results as they
 // would be seen by an actual client.
-//
 type Worker interface {
-	// Initialize this Worker with the configuration of the current 
+	// Initialize this Worker with the configuration of the current
 	// blockchain.
 	//
 	Init(c *configs.ChainConfig) error

@@ -1,10 +1,9 @@
 package diem
 
-
 import (
-	"time"
 	"strings"
 	"sync/atomic"
+	"time"
 
 	"go.uber.org/zap"
 
@@ -12,44 +11,41 @@ import (
 	"diablo-benchmark/core/results"
 )
 
-
 type signedTransaction struct {
-	tx    *transaction
-	raw   []byte
+	tx  *transaction
+	raw []byte
 }
 
 type signedTransactionQueue struct {
-	nextToSubmit  int64
-	nextToCommit  int64
-	queue         []signedTransaction
+	nextToSubmit int64
+	nextToCommit int64
+	queue        []signedTransaction
 }
 
 type submitEvent struct {
-	index  int
-	when   time.Time
+	index int
+	when  time.Time
 }
 
 type commitEvent struct {
-	index  int
-	when   time.Time
+	index int
+	when  time.Time
 }
 
 type Worker struct {
-	chainConfig         *configs.ChainConfig
-	blockchain          *blockchain
-	txqueues            []signedTransactionQueue
-	transactionOrigins  []int
-	notifySubmit        chan submitEvent
-	notifyCommit        chan commitEvent
-	notifyStop          chan bool
-	resultsChan         chan *results.EventLog
+	chainConfig        *configs.ChainConfig
+	blockchain         *blockchain
+	txqueues           []signedTransactionQueue
+	transactionOrigins []int
+	notifySubmit       chan submitEvent
+	notifyCommit       chan commitEvent
+	notifyStop         chan bool
+	resultsChan        chan *results.EventLog
 }
-
 
 func NewWorker() *Worker {
 	return &Worker{}
 }
-
 
 func (this *Worker) Init(c *configs.ChainConfig) error {
 	var conf *config
@@ -104,9 +100,9 @@ func (this *Worker) ParseWorkload(workload [][]byte) error {
 		this.transactionOrigins[i] = tx.from
 		this.txqueues[tx.from].queue =
 			append(this.txqueues[tx.from].queue, signedTransaction{
-			tx:   tx,
-			raw:  raw,
-		})
+				tx:  tx,
+				raw: raw,
+			})
 	}
 
 	return nil
@@ -138,7 +134,8 @@ func (this *Worker) collectEvents(start time.Time) {
 		commits[i] = -1
 	}
 
-	loop: for {
+loop:
+	for {
 		select {
 		case se = <-this.notifySubmit:
 			submits[se.index] = se.when.Sub(start).Milliseconds()
@@ -208,13 +205,12 @@ func (this *Worker) sendTransaction(index int) {
 	var submit, commit time.Time
 	var err error
 
-	defer func() { recover() } ()  // don't panic
+	defer func() { recover() }() // don't panic
 
 	zap.L().Debug("Send transaction",
 		zap.Int("from", stx.tx.from), zap.Int("to", stx.tx.to),
 		zap.Int("sequence", stx.tx.sequence),
 		zap.Int("endpoint", stx.tx.endpoint))
-
 
 	submit = time.Now()
 	err = this.blockchain.sendTransaction(stx.tx.endpoint, stx.raw)
@@ -225,8 +221,8 @@ func (this *Worker) sendTransaction(index int) {
 		}
 
 		this.notifySubmit <- submitEvent{
-			index:  index,
-			when:   submit,
+			index: index,
+			when:  submit,
 		}
 
 		zap.L().Warn("Cannot send transaction",
@@ -245,8 +241,8 @@ func (this *Worker) sendTransaction(index int) {
 		this.resetTxSlot(from, slot)
 
 		this.notifySubmit <- submitEvent{
-			index:  index,
-			when:   submit,
+			index: index,
+			when:  submit,
 		}
 
 		zap.L().Warn("Transaction failed",
@@ -261,12 +257,12 @@ func (this *Worker) sendTransaction(index int) {
 	this.commitTxSlot(from, slot)
 
 	this.notifySubmit <- submitEvent{
-		index:  index,
-		when:   submit,
+		index: index,
+		when:  submit,
 	}
 	this.notifyCommit <- commitEvent{
-		index:  index,
-		when:   commit,
+		index: index,
+		when:  commit,
 	}
 }
 

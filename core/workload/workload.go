@@ -1,34 +1,32 @@
 package workload
 
-
 // A workload transaction is an opaque byte array to send to the secondaries
 type workloadTransaction []byte
 
 // A workload interval is a list of transaction to send during a time interval
 type workloadInterval struct {
-	array  []workloadTransaction
+	array []workloadTransaction
 }
 
 // A thread workload is the list of workload intervals to send
 type ThreadWorkload struct {
-	array  []workloadInterval
+	array []workloadInterval
 }
 
 // A secondary workload is the list of the workloads to send for all the
 // threads of the secondary
 type secondaryWorkload struct {
-	array  []ThreadWorkload
+	array []ThreadWorkload
 }
 
 // A complete workload is the list of the workloads to send for all the
 // secondaries
 type Workload struct {
-	array  []secondaryWorkload
+	array []secondaryWorkload
 }
 
-
 func New() *Workload {
-	return &Workload{ array: make([]secondaryWorkload, 0) }
+	return &Workload{array: make([]secondaryWorkload, 0)}
 }
 
 func (this *Workload) BuildFlat() [][][][][]byte {
@@ -69,11 +67,9 @@ func (this *Workload) BuildFlat() [][][][][]byte {
 	return ret
 }
 
-
 func (this *workloadInterval) add(tx []byte) {
 	this.array = append(this.array, tx)
 }
-
 
 func (this *ThreadWorkload) getInterval(index int) *workloadInterval {
 	for len(this.array) <= index {
@@ -89,7 +85,6 @@ func (this *ThreadWorkload) add(interval int, tx []byte) {
 	this.getInterval(interval).add(tx)
 }
 
-
 func (this *secondaryWorkload) getThread(index int) *ThreadWorkload {
 	for len(this.array) <= index {
 		this.array = append(this.array, ThreadWorkload{
@@ -103,7 +98,6 @@ func (this *secondaryWorkload) getThread(index int) *ThreadWorkload {
 func (this *secondaryWorkload) add(threadId, interval int, tx []byte) {
 	this.getThread(threadId).add(interval, tx)
 }
-
 
 func (this *Workload) getSecondary(index int) *secondaryWorkload {
 	for len(this.array) <= index {

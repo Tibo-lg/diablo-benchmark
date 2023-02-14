@@ -1,24 +1,21 @@
 package core
 
-
 import (
 	"fmt"
 )
-
 
 type scope interface {
 	get(string) (Variable, string, bool)
 }
 
-
 type basicScope struct {
-	parent   scope
-	entries  map[string]*basicScopeEntry
+	parent  scope
+	entries map[string]*basicScopeEntry
 }
 
 type basicScopeEntry struct {
-	variable  Variable
-	domain    string
+	variable Variable
+	domain   string
 }
 
 func (this *basicScope) init(parent scope) {
@@ -50,7 +47,7 @@ func (this *basicScope) parse(expr BenchmarkExpression) error {
 
 		position, ok = positions[name]
 		if ok {
-			return fmt.Errorf("%s: variable '%s' redefined " +
+			return fmt.Errorf("%s: variable '%s' redefined "+
 				"(previously at %s)", child.FullPosition(),
 				name, position)
 		}

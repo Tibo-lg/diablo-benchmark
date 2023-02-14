@@ -390,7 +390,6 @@ func newStaticNonceManager(logger core.Logger, client *ethclient.Client) *static
 }
 
 // Return the optimisticNonce locked.
-//
 func (this *staticNonceManager) getNonce(from common.Address) (*staticNonce, error) {
 	var key string = from.String()
 	var ret *staticNonce

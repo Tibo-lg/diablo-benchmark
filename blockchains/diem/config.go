@@ -1,27 +1,24 @@
 package diem
 
-
 import (
 	"diablo-benchmark/core/configs"
 )
 
-
 type account struct {
-	address   string
-	key       string
-	sequence  int
+	address  string
+	key      string
+	sequence int
 }
 
 type config struct {
-	nodes     []string
-	accounts  []account
+	nodes    []string
+	accounts []account
 }
-
 
 func newConfig() *config {
 	return &config{
-		nodes:     make([]string, 0),
-		accounts:  make([]account, 0),
+		nodes:    make([]string, 0),
+		accounts: make([]account, 0),
 	}
 }
 
@@ -47,7 +44,6 @@ func parseConfig(c *configs.ChainConfig) (*config, error) {
 	return ret, nil
 }
 
-
 func (this *config) size() int {
 	return len(this.nodes)
 }
@@ -59,7 +55,6 @@ func (this *config) addNode(url string) {
 func (this *config) getNodeUrl(index int) string {
 	return this.nodes[index]
 }
-
 
 func (this *config) population() int {
 	return len(this.accounts)

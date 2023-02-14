@@ -1,13 +1,11 @@
 package core
 
-
 import (
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
 	"sort"
 )
-
 
 type benchmarkContext interface {
 	// Return the core providing used supplied parsing and instanciation.
@@ -38,7 +36,6 @@ type benchmarkContext interface {
 }
 
 // An expression in a benchmark configuration.
-//
 type BenchmarkExpression interface {
 	// An expression is always associated with a context.
 	//
@@ -108,7 +105,7 @@ type BenchmarkExpression interface {
 	// explored (i.e. returned by a method invocation).
 	// This method goes recursively.
 	// If at leat one subexpression has been unexplored, return an error.
-	// 
+	//
 	Finish() error
 
 	// Parse this expression assuming it is a scope expression with the
@@ -137,7 +134,6 @@ type BenchmarkExpression interface {
 	String() (StringVariable, error)
 	GetString() (string, error)
 }
-
 
 func parseBenchmarkYamlPath(path string, sys *system) error {
 	var context parsingContext
@@ -168,11 +164,10 @@ func parseBenchmarkYamlPath(path string, sys *system) error {
 	return nil
 }
 
-
 type parsingContext struct {
-	path  string
-	sys   *system
-	top   scope
+	path string
+	sys  *system
+	top  scope
 }
 
 func (this *parsingContext) init(path string, sys *system, top scope) {
@@ -201,10 +196,9 @@ func (this *parsingContext) specialize(top scope) {
 	this.top = top
 }
 
-
 type benchmark struct {
-	context    benchmarkContext
-	workloads  []interactionGenerator
+	context   benchmarkContext
+	workloads []interactionGenerator
 }
 
 func (this *benchmark) init(context benchmarkContext) {
@@ -219,7 +213,7 @@ func (this *benchmark) UnmarshalYAML(node *yaml.Node) error {
 	if err != nil {
 		return err
 	}
-	
+
 	return this.parse(expr)
 }
 
@@ -286,7 +280,7 @@ func (this *benchmark) instantiate() error {
 
 		encoded, err = iact.factory.Instance(iact.source,
 			&interactionInformation{
-				globalIndex: globalIndex,
+				globalIndex:  globalIndex,
 				scheduleTime: iact.scheduleTime,
 			})
 
@@ -308,20 +302,19 @@ func (this *benchmark) instantiate() error {
 	return nil
 }
 
-
 type benchmarkInteraction struct {
-	scheduleTime   float64
-	sendingClient  client
-	factory        InteractionFactory
-	source         BenchmarkExpression
-	current        scope
+	scheduleTime  float64
+	sendingClient client
+	factory       InteractionFactory
+	source        BenchmarkExpression
+	current       scope
 }
 
 type interactionInformation struct {
-	globalIndex   int
-	clientIndex   int
-	localIndex    int
-	scheduleTime  float64
+	globalIndex  int
+	clientIndex  int
+	localIndex   int
+	scheduleTime float64
 }
 
 func (this *interactionInformation) TotalOrder() int {
@@ -352,7 +345,7 @@ func fuseGenerators(out chan<- *benchmarkInteraction, ins []<-chan *benchmarkInt
 	elements = make([]*benchmarkInteraction, len(ins))
 
 	for i = range ins {
-		elements[i], _ = <- ins[i]
+		elements[i], _ = <-ins[i]
 	}
 
 	for {
@@ -380,16 +373,14 @@ func fuseGenerators(out chan<- *benchmarkInteraction, ins []<-chan *benchmarkInt
 
 		out <- elements[min]
 
-		elements[min] = <- ins[min]
+		elements[min] = <-ins[min]
 	}
 
 	close(out)
 }
 
-
-
 type workloadGenerator struct {
-	clientLoads  []interactionGenerator
+	clientLoads []interactionGenerator
 }
 
 func parseWorkload(expr BenchmarkExpression) (*workloadGenerator, error) {
@@ -450,10 +441,9 @@ func (this *workloadGenerator) generate() <-chan *benchmarkInteraction {
 	return out
 }
 
-
 type clientLoadGenerator struct {
-	target  client
-	loads   []interactionGenerator
+	target client
+	loads  []interactionGenerator
 }
 
 func parseClient(expr BenchmarkExpression) (*clientLoadGenerator, error) {
@@ -505,14 +495,13 @@ func parseClient(expr BenchmarkExpression) (*clientLoadGenerator, error) {
 			return nil, err
 		}
 
-		
 	}
 
 	return &this, nil
 }
 
 func parseView(client BenchmarkExpression) ([]string, error) {
- 	var vfield, sfield BenchmarkExpression
+	var vfield, sfield BenchmarkExpression
 	var addrs []string = make([]string, 0)
 	var element interface{}
 	var view Variable
@@ -580,7 +569,6 @@ func (this *clientLoadGenerator) generate() <-chan *benchmarkInteraction {
 	return out
 }
 
-
 func parseLoad(expr BenchmarkExpression, sender client) (interactionGenerator, error) {
 	var btype string
 	var err error
@@ -598,13 +586,12 @@ func parseLoad(expr BenchmarkExpression, sender client) (interactionGenerator, e
 		expr.FullPosition(), btype)
 }
 
-
 type timeloadGenerator struct {
-	load     map[float64]float64
-	sender   client
-	factory  InteractionFactory
-	source   BenchmarkExpression
-	current  scope
+	load    map[float64]float64
+	sender  client
+	factory InteractionFactory
+	source  BenchmarkExpression
+	current scope
 }
 
 func parseTimeload(expr BenchmarkExpression, sender client) (*timeloadGenerator, error) {
@@ -689,11 +676,11 @@ func (this *timeloadGenerator) flatten(out chan<- *benchmarkInteraction) {
 					done = 0
 					clock += wait
 					out <- &benchmarkInteraction{
-						scheduleTime: clock,
+						scheduleTime:  clock,
 						sendingClient: this.sender,
-						factory: this.factory,
-						source: this.source,
-						current: this.current,
+						factory:       this.factory,
+						source:        this.source,
+						current:       this.current,
 					}
 				} else {
 					done += (times[i] - clock) / tick
@@ -710,11 +697,10 @@ func (this *timeloadGenerator) flatten(out chan<- *benchmarkInteraction) {
 	close(out)
 }
 
-
 type errorExpression struct {
-	parent    benchmarkContext
-	position  string
-	err       error
+	parent   benchmarkContext
+	position string
+	err      error
 }
 
 func newErrorExpression(parent benchmarkContext, position string, err error) BenchmarkExpression {
@@ -846,7 +832,6 @@ func (this *errorExpression) GetString() (string, error) {
 	return "", this.err
 }
 
-
 func parseBenchmarkYaml(context benchmarkContext, node *yaml.Node) (BenchmarkExpression, error) {
 	if node.Kind == yaml.MappingNode {
 		return parseBenchmarkYamlMapping(context, node)
@@ -868,13 +853,12 @@ func parseBenchmarkYaml(context benchmarkContext, node *yaml.Node) (BenchmarkExp
 		node.Kind, context.Source(), node.Line, node.Column))
 }
 
-
 type benchmarkYamlNode struct {
-	parent  benchmarkContext
-	node    *yaml.Node
-	slocal  scope
-	texpl   bool       // etype() has been called
-	nexpl   bool       // name() has been called
+	parent benchmarkContext
+	node   *yaml.Node
+	slocal scope
+	texpl  bool // etype() has been called
+	nexpl  bool // name() has been called
 }
 
 func (this *benchmarkYamlNode) init(parent benchmarkContext, node *yaml.Node) {
@@ -1036,11 +1020,10 @@ func (this *benchmarkYamlNode) GetString() (string, error) {
 	return "", fmt.Errorf("%s: must be a string", this.FullPosition())
 }
 
-
 type benchmarkYamlField struct {
 	benchmarkYamlNode
-	key    BenchmarkExpression
-	value  BenchmarkExpression
+	key   BenchmarkExpression
+	value BenchmarkExpression
 }
 
 func parseBenchmarkYamlField(context benchmarkContext, key, value *yaml.Node) (BenchmarkExpression, error) {
@@ -1074,7 +1057,6 @@ func (this *benchmarkYamlField) Finish() error {
 	return nil
 }
 
-
 type benchmarkYamlMapping struct {
 	benchmarkYamlNode
 	index  map[string]int
@@ -1089,22 +1071,22 @@ func parseBenchmarkYamlMapping(context benchmarkContext, node *yaml.Node) (Bench
 	var err error
 
 	this.init(context, node)
-	this.index = make(map[string]int, len(node.Content) / 2)
-	this.fields = make([]BenchmarkExpression, len(node.Content) / 2)
+	this.index = make(map[string]int, len(node.Content)/2)
+	this.fields = make([]BenchmarkExpression, len(node.Content)/2)
 
 	for i = 0; i < len(this.fields); i++ {
-		key = node.Content[i * 2]
-		value = node.Content[i * 2 + 1]
+		key = node.Content[i*2]
+		value = node.Content[i*2+1]
 
 		index, found = this.index[key.Value]
 		if found {
-			return nil, fmt.Errorf("%s:%d:%d: field defined " +
+			return nil, fmt.Errorf("%s:%d:%d: field defined "+
 				"twice (previously at %s)", this.Source(),
 				key.Line, key.Column,
 				this.fields[index].Key().Position())
 		}
 
-		this.fields[i], err = parseBenchmarkYamlField(&this, key,value)
+		this.fields[i], err = parseBenchmarkYamlField(&this, key, value)
 		if err != nil {
 			return nil, err
 		}
@@ -1151,7 +1133,6 @@ func (this *benchmarkYamlMapping) TryMap() ([]BenchmarkExpression, error) {
 func (this *benchmarkYamlMapping) Finish() error {
 	return nil
 }
-
 
 type benchmarkYamlSequence struct {
 	benchmarkYamlNode
@@ -1202,7 +1183,6 @@ func (this *benchmarkYamlSequence) scope() (scope, error) {
 
 	return &local, nil
 }
-
 
 type benchmarkYamlScalar struct {
 	benchmarkYamlNode
@@ -1334,7 +1314,6 @@ func (this *benchmarkYamlScalar) GetString() (string, error) {
 
 	return "", fmt.Errorf("%s: must be a string", this.FullPosition())
 }
-
 
 type benchmarkYamlAlias struct {
 	benchmarkYamlNode

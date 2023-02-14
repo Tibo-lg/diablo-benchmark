@@ -1,15 +1,12 @@
 package core
 
-
 import (
 	"fmt"
 	"io"
 	"time"
 )
 
-
 type LogLevel uint8
-
 
 const (
 	LOG_SILENT LogLevel = 0
@@ -20,7 +17,6 @@ const (
 	LOG_DEBUG  LogLevel = 5
 	LOG_TRACE  LogLevel = 6
 )
-
 
 type Logger interface {
 	// Log a message with a printf format for different log levels.
@@ -38,9 +34,7 @@ type Logger interface {
 	Extend(string) Logger
 }
 
-
 var globalLogger Logger = &noLogger{}
-
 
 func SetLogger(logger Logger) {
 	globalLogger = logger
@@ -74,27 +68,25 @@ func ExtendLogger(name string) Logger {
 	return globalLogger.Extend(name)
 }
 
-
 type noLogger struct {
 }
 
 func (this *noLogger) Fatalf(string, ...interface{}) {}
 func (this *noLogger) Errorf(string, ...interface{}) {}
-func (this *noLogger) Warnf(string, ...interface{}) {}
-func (this *noLogger) Infof(string, ...interface{}) {}
+func (this *noLogger) Warnf(string, ...interface{})  {}
+func (this *noLogger) Infof(string, ...interface{})  {}
 func (this *noLogger) Debugf(string, ...interface{}) {}
 func (this *noLogger) Tracef(string, ...interface{}) {}
-func (this *noLogger) Extend(string) Logger { return this }
-
+func (this *noLogger) Extend(string) Logger          { return this }
 
 type printLogger struct {
-	stream  io.Writer
-	name    string
-	level   LogLevel
+	stream io.Writer
+	name   string
+	level  LogLevel
 }
 
 func NewPrintLogger(stream io.Writer, name string, level LogLevel) Logger {
-	return &printLogger{ stream, name, level }
+	return &printLogger{stream, name, level}
 }
 
 func (this *printLogger) log(level, format string, args ...interface{}) {
@@ -110,7 +102,7 @@ func (this *printLogger) log(level, format string, args ...interface{}) {
 	sec = now.Second()
 	ms = now.Nanosecond() / 1000000
 
-	str = fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d.%03d " +
+	str = fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d.%03d "+
 		"%s %s: ", year, month, day, hour, min, sec, ms, level,
 		this.name)
 	str += fmt.Sprintf(format, args...)

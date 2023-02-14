@@ -1,24 +1,21 @@
 package main
 
-
 import (
 	"fmt"
 	"strings"
 )
 
-
 type shortOption struct {
-	name   byte
-	value  bool
-	cb     func(string) error
+	name  byte
+	value bool
+	cb    func(string) error
 }
 
 type longOption struct {
-	name   string
-	value  bool
-	cb     func(string) error
+	name  string
+	value bool
+	cb    func(string) error
 }
-
 
 func parseLongOption(arg string, longs []longOption) (func(string) error, error) {
 	var optname, optval string
@@ -31,7 +28,7 @@ func parseLongOption(arg string, longs []longOption) (func(string) error, error)
 	if idx > 0 {
 		hasVal = true
 		optname = arg[2:idx]
-		optval = arg[(idx+1):]
+		optval = arg[(idx + 1):]
 	} else {
 		hasVal = false
 		optname = arg[2:]
@@ -48,14 +45,14 @@ func parseLongOption(arg string, longs []longOption) (func(string) error, error)
 				err = longs[i].cb(optval)
 
 				if err != nil {
-					return nil, fmt.Errorf("invalid " +
+					return nil, fmt.Errorf("invalid "+
 						"value for '--%s': %s",
 						optname, err.Error())
 				}
 
 				return nil, nil
 			} else {
-				return nil, fmt.Errorf("unexpected value " +
+				return nil, fmt.Errorf("unexpected value "+
 					"for '--%s': '%s'", optname, optval)
 			}
 		}
@@ -68,8 +65,8 @@ func parseLongOption(arg string, longs []longOption) (func(string) error, error)
 					return nil
 				}
 
-				return fmt.Errorf("invalid value for " +
-						"'--%s': %s", optname,
+				return fmt.Errorf("invalid value for "+
+					"'--%s': %s", optname,
 					err.Error())
 			}, nil
 		}
@@ -101,17 +98,16 @@ func parseShortOptions(arg string, shorts []shortOption) (func(string) error, er
 			}
 
 			if shorts[j].value {
-				if (i+2) == len(arg) {
+				if (i + 2) == len(arg) {
 					return func(val string) error {
-						var err error =
-							shorts[j].cb(val)
+						var err error = shorts[j].cb(val)
 
 						if err == nil {
 							return nil
 						}
 
-						return fmt.Errorf("invalid " +
-							"value for '%c' in " +
+						return fmt.Errorf("invalid "+
+							"value for '%c' in "+
 							"'%s': %s", arg[i+1],
 							arg, err.Error())
 					}, nil
@@ -120,7 +116,7 @@ func parseShortOptions(arg string, shorts []shortOption) (func(string) error, er
 				err = shorts[j].cb(arg[i+2:])
 
 				if err != nil {
-					return nil, fmt.Errorf("invalid " +
+					return nil, fmt.Errorf("invalid "+
 						"value for '%c' in '%s': %s",
 						arg[i+1], arg, err.Error())
 				}
@@ -131,7 +127,7 @@ func parseShortOptions(arg string, shorts []shortOption) (func(string) error, er
 			err = shorts[j].cb("")
 
 			if err != nil {
-				return nil, fmt.Errorf("invalid value for " +
+				return nil, fmt.Errorf("invalid value for "+
 					"'%c' in '%s': %s", arg[i+1], arg,
 					err.Error())
 			}

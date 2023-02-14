@@ -1,18 +1,16 @@
 package core
 
-
 import (
 	"encoding/binary"
 	"fmt"
 	"io"
 )
 
-
 type msgPrimaryParameters struct {
-	sysname      string
-	chainParams  map[string]string
-	maxDelay     float64
-	maxSkew      float64
+	sysname     string
+	chainParams map[string]string
+	maxDelay    float64
+	maxSkew     float64
 }
 
 func decodeMsgPrimaryParameters(src io.Reader) (*msgPrimaryParameters, error) {
@@ -101,12 +99,12 @@ func (this *msgPrimaryParameters) encode(dest io.Writer) error {
 
 	for key, value = range this.chainParams {
 		if len(key) > 255 {
-			return fmt.Errorf("chain parameter name '%s' too " +
+			return fmt.Errorf("chain parameter name '%s' too "+
 				"long (%d bytes)", key, len(key))
 		}
 
 		if len(value) > 255 {
-			return fmt.Errorf("chain parameter value '%s' too " +
+			return fmt.Errorf("chain parameter value '%s' too "+
 				"long (%d bytes)", value, len(value))
 		}
 	}
@@ -162,9 +160,8 @@ func (this *msgPrimaryParameters) encode(dest io.Writer) error {
 	return nil
 }
 
-
 type msgSecondaryParameters struct {
-	tags  []string
+	tags []string
 }
 
 func decodeMsgSecondaryParameters(src io.Reader) (*msgSecondaryParameters, error) {
@@ -239,7 +236,6 @@ func (this *msgSecondaryParameters) encode(dest io.Writer) error {
 	return nil
 }
 
-
 type msgPrepareType = uint8
 
 type msgPrepare interface {
@@ -247,21 +243,21 @@ type msgPrepare interface {
 }
 
 const (
-	MSG_PREPARE_TYPE_DONE         msgPrepareType = 0
-	MSG_PREPARE_TYPE_CLIENT       msgPrepareType = 1
-	MSG_PREPARE_TYPE_INTERACTION  msgPrepareType = 2
+	MSG_PREPARE_TYPE_DONE        msgPrepareType = 0
+	MSG_PREPARE_TYPE_CLIENT      msgPrepareType = 1
+	MSG_PREPARE_TYPE_INTERACTION msgPrepareType = 2
 )
 
 func decodeMsgPrepare(src io.Reader) (msgPrepare, error) {
 	var mtype []byte = make([]byte, 1)
 	var err error
-	
+
 	_, err = io.ReadFull(src, mtype)
 	if err != nil {
 		return nil, err
 	}
 
-	switch (mtype[0]) {
+	switch mtype[0] {
 	case MSG_PREPARE_TYPE_DONE:
 		return decodeMsgPrepareDone(src)
 	case MSG_PREPARE_TYPE_CLIENT:
@@ -273,7 +269,6 @@ func decodeMsgPrepare(src io.Reader) (msgPrepare, error) {
 			mtype[0])
 	}
 }
-
 
 type msgPrepareDone struct {
 }
@@ -292,10 +287,9 @@ func (this *msgPrepareDone) encode(dest io.Writer) error {
 	return err
 }
 
-
 type msgPrepareClient struct {
-	view   []string
-	index  int
+	view  []string
+	index int
 }
 
 func decodeMsgPrepareClient(src io.Reader) (msgPrepare, error) {
@@ -392,12 +386,11 @@ func (this *msgPrepareClient) encode(dest io.Writer) error {
 	return nil
 }
 
-
 type msgPrepareInteraction struct {
-	index    int
-	ikind    int
-	time     float64
-	payload  []byte
+	index   int
+	ikind   int
+	time    float64
+	payload []byte
 }
 
 func decodeMsgPrepareInteraction(src io.Reader) (msgPrepare, error) {
@@ -450,7 +443,7 @@ func (this *msgPrepareInteraction) encode(dest io.Writer) error {
 	}
 
 	if this.ikind > 255 {
-		return fmt.Errorf("interaction kind too large (%d)",this.ikind)
+		return fmt.Errorf("interaction kind too large (%d)", this.ikind)
 	}
 
 	// If you find yourself stuck by this limit then wait a moment before
@@ -488,7 +481,7 @@ func (this *msgPrepareInteraction) encode(dest io.Writer) error {
 		return err
 	}
 
-	err = binary.Write(dest, binary.LittleEndian,uint16(len(this.payload)))
+	err = binary.Write(dest, binary.LittleEndian, uint16(len(this.payload)))
 	if err != nil {
 		return err
 	}
@@ -501,9 +494,8 @@ func (this *msgPrepareInteraction) encode(dest io.Writer) error {
 	return nil
 }
 
-
 type msgStart struct {
-	duration  float64
+	duration float64
 }
 
 func decodeMsgStart(src io.Reader) (*msgStart, error) {
@@ -522,7 +514,6 @@ func (this *msgStart) encode(dest io.Writer) error {
 	return binary.Write(dest, binary.LittleEndian, this.duration)
 }
 
-
 type msgResultType = uint8
 
 type msgResult interface {
@@ -530,20 +521,20 @@ type msgResult interface {
 }
 
 const (
-	MSG_RESULT_TYPE_DONE         msgResultType = 0
-	MSG_RESULT_TYPE_INTERACTION  msgResultType = 1
+	MSG_RESULT_TYPE_DONE        msgResultType = 0
+	MSG_RESULT_TYPE_INTERACTION msgResultType = 1
 )
 
 func decodeMsgResult(src io.Reader) (msgResult, error) {
 	var mtype []byte = make([]byte, 1)
 	var err error
-	
+
 	_, err = io.ReadFull(src, mtype)
 	if err != nil {
 		return nil, err
 	}
 
-	switch (mtype[0]) {
+	switch mtype[0] {
 	case MSG_RESULT_TYPE_DONE:
 		return decodeMsgResultDone(src)
 	case MSG_RESULT_TYPE_INTERACTION:
@@ -553,7 +544,6 @@ func decodeMsgResult(src io.Reader) (msgResult, error) {
 			mtype[0])
 	}
 }
-
 
 type msgResultDone struct {
 }
@@ -575,14 +565,13 @@ func (this *msgResultDone) encode(dest io.Writer) error {
 	return nil
 }
 
-
 type msgResultInteraction struct {
-	index       int      // client index
-	ikind       int      // interaction kind index
-	submitTime  float64  // negative if not submitted
-	commitTime  float64  // negative if not committed
-	abortTime   float64  // negative if not aborted
-	hasError    bool
+	index      int     // client index
+	ikind      int     // interaction kind index
+	submitTime float64 // negative if not submitted
+	commitTime float64 // negative if not committed
+	abortTime  float64 // negative if not aborted
+	hasError   bool
 }
 
 func decodeMsgResultInteraction(src io.Reader) (msgResult, error) {
@@ -639,7 +628,7 @@ func (this *msgResultInteraction) encode(dest io.Writer) error {
 	}
 
 	if this.ikind > 255 {
-		return fmt.Errorf("interaction kind too large (%d)",this.ikind)
+		return fmt.Errorf("interaction kind too large (%d)", this.ikind)
 	}
 
 	buf = make([]byte, 1)

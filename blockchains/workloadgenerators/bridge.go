@@ -1,6 +1,5 @@
 package workloadgenerators
 
-
 import (
 	"math/big"
 
@@ -9,25 +8,24 @@ import (
 	"diablo-benchmark/core/workload"
 )
 
-
 type ControllerBridge struct {
 	GenericWorkloadGenerator
-	chainConfig  *configs.ChainConfig
-	benchConfig  *configs.BenchConfig
-	inner        blockchain.Controller
+	chainConfig *configs.ChainConfig
+	benchConfig *configs.BenchConfig
+	inner       blockchain.Controller
 }
 
 func NewControllerBridge(inner blockchain.Controller) *ControllerBridge {
 	return &ControllerBridge{
-		inner:  inner,
+		inner: inner,
 	}
 }
 
 func (this *ControllerBridge) NewGenerator(chainConfig *configs.ChainConfig, benchConfig *configs.BenchConfig) WorkloadGenerator {
 	return &ControllerBridge{
-		chainConfig:  chainConfig,
-		benchConfig:  benchConfig,
-		inner:        this.inner,
+		chainConfig: chainConfig,
+		benchConfig: benchConfig,
+		inner:       this.inner,
 	}
 }
 

@@ -2,7 +2,7 @@ package types
 
 import "time"
 
-//FabricTX represents all the necessary information for an
+// FabricTX represents all the necessary information for an
 // Hyperledger Fabric transaction
 type FabricTX struct {
 	ID           uint64   `json:"id"`            // id used in the client interface to keep track of the transaction and register departure and arrival time
@@ -11,7 +11,7 @@ type FabricTX struct {
 	Args         []string `json:"args"`          // arguments to invoke the chaincode
 }
 
-//FabricUser represents a user/account which is the identity by
+// FabricUser represents a user/account which is the identity by
 // which the secondary will contact the Fabric network
 type FabricUser struct {
 	Label string `yaml:label` // user label in the identity wallet used by the gateway
@@ -20,10 +20,10 @@ type FabricUser struct {
 	Key   string `yaml:"key"`
 }
 
-//FabricCommitEvent represents a commit event which we construct after having submitted a transaction
+// FabricCommitEvent represents a commit event which we construct after having submitted a transaction
 // and received the answer (valid or not)
 type FabricCommitEvent struct {
-	Valid bool
-	ID     uint64 // the ID used in client to keep track of the transaction and register throughput
+	Valid      bool
+	ID         uint64    // the ID used in client to keep track of the transaction and register throughput
 	CommitTime time.Time // the time the transaction was committed
 }

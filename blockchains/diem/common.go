@@ -1,42 +1,39 @@
 package diem
 
-
 import (
 	"encoding/binary"
 	"errors"
 )
 
-
 type transaction struct {
-	from      int
-	to        int
-	amount    int
-	sequence  int
-	endpoint  int
+	from     int
+	to       int
+	amount   int
+	sequence int
+	endpoint int
 }
-
 
 func newTransaction(from, to, amount, sequence, endpoint int) *transaction {
 	return &transaction{
-		from:      from,
-		to:        to,
-		amount:    amount,
-		sequence:  sequence,
-		endpoint:  endpoint,
+		from:     from,
+		to:       to,
+		amount:   amount,
+		sequence: sequence,
+		endpoint: endpoint,
 	}
 }
 
-func decodeTransaction(encoded []byte) (*transaction, error)  {
+func decodeTransaction(encoded []byte) (*transaction, error) {
 	if len(encoded) < 14 {
 		return nil, errors.New("corrupted transaction")
 	}
 
 	return &transaction{
-		from:      int(binary.LittleEndian.Uint16(encoded[0:])),
-		to:        int(binary.LittleEndian.Uint16(encoded[2:])),
-		amount:    int(binary.LittleEndian.Uint32(encoded[4:])),
-		sequence:  int(binary.LittleEndian.Uint32(encoded[8:])),
-		endpoint:  int(binary.LittleEndian.Uint16(encoded[12:])),
+		from:     int(binary.LittleEndian.Uint16(encoded[0:])),
+		to:       int(binary.LittleEndian.Uint16(encoded[2:])),
+		amount:   int(binary.LittleEndian.Uint32(encoded[4:])),
+		sequence: int(binary.LittleEndian.Uint32(encoded[8:])),
+		endpoint: int(binary.LittleEndian.Uint16(encoded[12:])),
 	}, nil
 }
 

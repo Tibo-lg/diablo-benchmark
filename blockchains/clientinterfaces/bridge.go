@@ -1,6 +1,5 @@
 package clientinterfaces
 
-
 import (
 	"diablo-benchmark/blockchains"
 	"diablo-benchmark/blockchains/workloadgenerators"
@@ -8,37 +7,36 @@ import (
 	"diablo-benchmark/core/results"
 )
 
-
 type WorkerBridge struct {
 	GenericInterface
-	chainConfig  *configs.ChainConfig
-	inner        blockchain.Worker
+	chainConfig *configs.ChainConfig
+	inner       blockchain.Worker
 }
 
 // All this crap is to make a bridge between the old Diablo model and the new
 // one.
 //
 // Old model: One of the workers parses for everyone and send the transactions
-//            to Diablo. Diablo later dispatches the transactions between
-//            workers.
+//
+//	to Diablo. Diablo later dispatches the transactions between
+//	workers.
 //
 // New model: Each worker parses its own transactions and store them locally.
-//            Diablo just tell each worker which one to send during the
-//            benchmark.
+//
+//	Diablo just tell each worker which one to send during the
+//	benchmark.
 //
 // This avoids transfering transactions back and forth between Diablo and the
 // workers, with unecessary conversions making the code more complicated.
 //
 // Also, storing all the transactions which can be sent allows to store a state
 // along the transactions, which simplifies stats collection.
-//
 var allBridges []*WorkerBridge = make([]*WorkerBridge, 0)
 var parsedWorkloads int = 0
 
-
 func NewWorkerBridge(inner blockchain.Worker) *WorkerBridge {
 	return &WorkerBridge{
-		inner:  inner,
+		inner: inner,
 	}
 }
 

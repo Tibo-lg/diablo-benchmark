@@ -1,6 +1,5 @@
 package algorand
 
-
 import (
 	"encoding/binary"
 	"errors"
@@ -8,13 +7,11 @@ import (
 	"diablo-benchmark/core/configs"
 )
 
-
 type transaction struct {
-	endpoint  int       // blockchain node to which to send the transaction
-	uid       int              // unique identifier (whole benchmark scope)
-	raw       []byte                  // bytes to send to the endpoint node
+	endpoint int    // blockchain node to which to send the transaction
+	uid      int    // unique identifier (whole benchmark scope)
+	raw      []byte // bytes to send to the endpoint node
 }
-
 
 func makeTransactionNote(uid int) []byte {
 	var note []byte = make([]byte, 4)
@@ -28,12 +25,11 @@ func getUidFromTransactionNote(note []byte) int {
 	return int(binary.LittleEndian.Uint32(note))
 }
 
-
 func newTransaction(endpoint, uid int, raw []byte) transaction {
 	return transaction{
-		endpoint:  endpoint,
-		uid:       uid,
-		raw:       raw,
+		endpoint: endpoint,
+		uid:      uid,
+		raw:      raw,
 	}
 }
 
@@ -58,9 +54,7 @@ func (this transaction) encode() []byte {
 	return append(header, this.raw...)
 }
 
-
-const benchmarkToken =
-	"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+const benchmarkToken = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
 func parseConfig(c *configs.ChainConfig) (*Config, error) {
 	var iextra, iaccount map[string]interface{}

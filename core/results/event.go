@@ -1,28 +1,23 @@
 package results
 
-
 // import (
 // 	"go.uber.org/zap"
 // )
 
-
 type transactionStat struct {
-	submit  int64                                   // -1 if never happened
-	commit  int64                                   // -1 if never happened
+	submit int64 // -1 if never happened
+	commit int64 // -1 if never happened
 }
-
 
 type EventLog struct {
-	stats  map[int]*transactionStat             // index -> transactionStat
+	stats map[int]*transactionStat // index -> transactionStat
 }
-
 
 func NewEventLog() *EventLog {
 	return &EventLog{
-		stats:  make(map[int]*transactionStat, 0),
+		stats: make(map[int]*transactionStat, 0),
 	}
 }
-
 
 func (this *EventLog) getStat(index int) *transactionStat {
 	var stat *transactionStat
@@ -32,8 +27,8 @@ func (this *EventLog) getStat(index int) *transactionStat {
 
 	if present == false {
 		stat = &transactionStat{
-			submit:  -1,
-			commit:  -1,
+			submit: -1,
+			commit: -1,
 		}
 
 		this.stats[index] = stat
@@ -42,12 +37,10 @@ func (this *EventLog) getStat(index int) *transactionStat {
 	return stat
 }
 
-
 // Log that a transaction has been submitted to the blockchain.
 //
 // index: index of the transaction within thread workload
 // when:  submission time relative to benchmark start in milliseconds
-//
 func (this *EventLog) AddSubmit(index int, when int64) {
 	this.getStat(index).submit = when
 }
@@ -58,14 +51,11 @@ func (this *EventLog) AddSubmit(index int, when int64) {
 //
 // index: index of the transaction within thread workload
 // when: commit time relative to benchmark start in milliseconds
-//
 func (this *EventLog) AddCommit(index int, when int64) {
 	this.getStat(index).commit = when
 }
 
-
 // Bridge with old Diablo result format.
-//
 func (this *EventLog) Format(window int) Results {
 	var i, txsum, total, maxCommit int
 	var commitPerSecond []int
@@ -84,7 +74,7 @@ func (this *EventLog) Format(window int) Results {
 			lat = float64(s.commit - s.submit)
 			ret.TxLatencies = append(ret.TxLatencies, lat)
 			ret.Success += 1
-			if int(s.commit / 1000) > maxCommit {
+			if int(s.commit/1000) > maxCommit {
 				maxCommit = int(s.commit / 1000)
 			}
 		} else {
@@ -92,11 +82,11 @@ func (this *EventLog) Format(window int) Results {
 		}
 	}
 
-	commitPerSecond = make([]int, maxCommit + 1)
+	commitPerSecond = make([]int, maxCommit+1)
 
 	for _, s = range this.stats {
 		if (s.submit >= 0) && (s.commit >= 0) {
-			commitPerSecond[int(s.commit / 1000)] += 1
+			commitPerSecond[int(s.commit/1000)] += 1
 		}
 	}
 
@@ -109,7 +99,7 @@ func (this *EventLog) Format(window int) Results {
 		txsum += commitPerSecond[i]
 
 		if i >= window {
-			txsum -= commitPerSecond[i - window]
+			txsum -= commitPerSecond[i-window]
 			thr = float64(txsum) / float64(window)
 		} else {
 			thr = float64(txsum) / float64(i+1)

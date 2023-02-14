@@ -1,6 +1,5 @@
 package diem
 
-
 import (
 	"fmt"
 	"math/rand"
@@ -11,18 +10,15 @@ import (
 	"diablo-benchmark/core/workload"
 )
 
-
 type Controller struct {
-	benchConfig  *configs.BenchConfig
-	intervals    []int
-	blockchain   *blockchain
+	benchConfig *configs.BenchConfig
+	intervals   []int
+	blockchain  *blockchain
 }
-
 
 func NewController() *Controller {
 	return &Controller{}
 }
-
 
 func (this *Controller) Init(c *configs.ChainConfig, b *configs.BenchConfig, txs []int) error {
 	var conf *config
@@ -48,7 +44,6 @@ func (this *Controller) Setup() error {
 	return nil
 }
 
-
 func (this *Controller) generateSimpleTransaction(dest *workload.Workload, random *rand.Rand, secondaryId, threadId, interval int, froms []int, sequences []int) error {
 	var population, endpoint, from, to int
 	var tx *transaction
@@ -57,7 +52,7 @@ func (this *Controller) generateSimpleTransaction(dest *workload.Workload, rando
 	population = this.blockchain.population()
 
 	endpoint = random.Int() % this.blockchain.size()
-	from = froms[random.Int() % len(froms)]
+	from = froms[random.Int()%len(froms)]
 	to = random.Int() % population
 
 	zap.L().Debug("new transaction", zap.Int("secondary", secondaryId),
@@ -102,7 +97,7 @@ func (this *Controller) Generate() (*workload.Workload, error) {
 	population = this.blockchain.population()
 
 	sequences = make([]int, population)
-	homes = make([][]int, secondaries * threads)
+	homes = make([][]int, secondaries*threads)
 
 	if population < len(homes) {
 		err = fmt.Errorf("less accounts (%d) than clients (%d)",
@@ -120,7 +115,7 @@ func (this *Controller) Generate() (*workload.Workload, error) {
 
 	for secondaryId = 0; secondaryId < secondaries; secondaryId++ {
 		for threadId = 0; threadId < threads; threadId++ {
-			home = secondaryId * threads + threadId
+			home = secondaryId*threads + threadId
 			for interval, txnum = range this.intervals {
 				for i = 0; i < txnum; i++ {
 					err = this.generateTransaction(ret,

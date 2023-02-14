@@ -1,10 +1,8 @@
 package core
 
-
 import (
 	"fmt"
 )
-
 
 type Interaction interface {
 	Payload() interface{}
@@ -16,14 +14,12 @@ type Interaction interface {
 	ReportAbort()
 }
 
-
 type InteractionInfo interface {
 	// Return the schedule sedning time of the interaction relative to the
 	// beginning of the benchmark.
 	//
 	Timestamp() float64
 }
-
 
 type BlockchainInterface interface {
 	// Create a blockchain initializer.
@@ -76,10 +72,8 @@ type BlockchainClient interface {
 	TriggerInteraction(iact Interaction) error
 }
 
-
-
 type accountFactory struct {
-	builder  BlockchainBuilder
+	builder BlockchainBuilder
 }
 
 func newAccountFactory(builder BlockchainBuilder) *accountFactory {
@@ -121,7 +115,7 @@ func (this *accountFactory) Instance(expr BenchmarkExpression) (Sample, error) {
 
 		elements[i], err = this.builder.CreateAccount(istake)
 		if err != nil {
-			return nil, fmt.Errorf("%s: failed to create " +
+			return nil, fmt.Errorf("%s: failed to create "+
 				"sample: %s", expr.FullPosition(), err.Error())
 		}
 	}
@@ -129,9 +123,8 @@ func (this *accountFactory) Instance(expr BenchmarkExpression) (Sample, error) {
 	return newElementSample(elements), nil
 }
 
-
 type contractFactory struct {
-	builder  BlockchainBuilder
+	builder BlockchainBuilder
 }
 
 func newContractFactory(builder BlockchainBuilder) *contractFactory {
@@ -174,7 +167,7 @@ func (this *contractFactory) Instance(expr BenchmarkExpression) (Sample, error) 
 
 		elements[i], err = this.builder.CreateContract(iname)
 		if err != nil {
-			return nil, fmt.Errorf("%s: failed to create " +
+			return nil, fmt.Errorf("%s: failed to create "+
 				"sample: %s", expr.FullPosition(), err.Error())
 		}
 	}
@@ -182,9 +175,8 @@ func (this *contractFactory) Instance(expr BenchmarkExpression) (Sample, error) 
 	return newElementSample(elements), nil
 }
 
-
 type transferInteractionFactory struct {
-	builder  BlockchainBuilder
+	builder BlockchainBuilder
 }
 
 func newTransferInteractionFactory(builder BlockchainBuilder) *transferInteractionFactory {
@@ -194,7 +186,7 @@ func newTransferInteractionFactory(builder BlockchainBuilder) *transferInteracti
 }
 
 func (this *transferInteractionFactory) Instance(expr BenchmarkExpression, info InteractionInfo) ([]byte, error) {
-        var field BenchmarkExpression
+	var field BenchmarkExpression
 	var from, to interface{}
 	var stake int
 	var err error
@@ -222,9 +214,8 @@ func (this *transferInteractionFactory) Instance(expr BenchmarkExpression, info 
 	return this.builder.EncodeTransfer(stake, from, to, info)
 }
 
-
 type invokeInteractionFactory struct {
-	builder  BlockchainBuilder
+	builder BlockchainBuilder
 }
 
 func newInvokeInteractionFactory(builder BlockchainBuilder) *invokeInteractionFactory {
@@ -256,16 +247,15 @@ func (this *invokeInteractionFactory) Instance(expr BenchmarkExpression, info In
 	return this.builder.EncodeInvoke(from, contract, function, info)
 }
 
-
 type proxyInteractionFactory struct {
-	builder  BlockchainBuilder
-	itype    string
+	builder BlockchainBuilder
+	itype   string
 }
 
 func newProxyInteractionFactory(builder BlockchainBuilder, itype string) *proxyInteractionFactory {
 	return &proxyInteractionFactory{
 		builder: builder,
-		itype: itype,
+		itype:   itype,
 	}
 }
 

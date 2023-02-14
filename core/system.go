@@ -1,32 +1,27 @@
 package core
 
-
 import (
 	"math/rand"
 )
-
-
-
 
 type SampleFactory interface {
 	Instance(expr BenchmarkExpression) (Sample, error)
 }
 
 type InteractionFactory interface {
-	Instance(expr BenchmarkExpression, info InteractionInfo) ([]byte,error)
+	Instance(expr BenchmarkExpression, info InteractionInfo) ([]byte, error)
 }
 
 type randomFactory interface {
 	instance(expr BenchmarkExpression) (Random, error)
 }
 
-
 type system struct {
-	seedGenerator  *rand.Rand
-	builder        BlockchainBuilder
-	samples        map[string]SampleFactory
-	randoms        map[string]randomFactory
-	interactions   map[string]InteractionFactory
+	seedGenerator *rand.Rand
+	builder       BlockchainBuilder
+	samples       map[string]SampleFactory
+	randoms       map[string]randomFactory
+	interactions  map[string]InteractionFactory
 }
 
 func newSystem(masterSeed int64, locations []location, setup setup, builder BlockchainBuilder) *system {
@@ -36,22 +31,22 @@ func newSystem(masterSeed int64, locations []location, setup setup, builder Bloc
 	this.builder = builder
 
 	this.samples = map[string]SampleFactory{
-		"account": newAccountFactory(builder),
+		"account":  newAccountFactory(builder),
 		"contract": newContractFactory(builder),
 		"endpoint": newEndpointSampleFactory(setup),
-		"float": newFloatSampleFactory(),
-		"integer": newIntSampleFactory(),
+		"float":    newFloatSampleFactory(),
+		"integer":  newIntSampleFactory(),
 		"location": newLocationSampleFactory(locations),
 	}
 
 	this.randoms = map[string]randomFactory{
 		"uniform": newUniformRandomFactory(),
-		"normal": newNormalRandomFactory(),
+		"normal":  newNormalRandomFactory(),
 	}
 
 	this.interactions = map[string]InteractionFactory{
 		"transfer": newTransferInteractionFactory(builder),
-		"invoke": newInvokeInteractionFactory(builder),
+		"invoke":   newInvokeInteractionFactory(builder),
 	}
 
 	return &this

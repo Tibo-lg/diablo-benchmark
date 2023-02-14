@@ -17,7 +17,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//FabricInterface is the Hyperledger Fabric implementation of the clientinterface
+// FabricInterface is the Hyperledger Fabric implementation of the clientinterface
 // Provides functionality to communicate with the Fabric blockchain
 type FabricInterface struct {
 	Gateway       *gateway.Gateway              // Gateway manages the network interaction on behalf of the application
@@ -63,7 +63,6 @@ func (f *FabricInterface) Init(chainConfig *configs.ChainConfig) {
 			zap.L().Warn("Failed to populate wallet" + err.Error())
 		}
 	}
-
 
 	ccpPath := mapConfig["ccpPath"].(string)
 
@@ -174,7 +173,7 @@ func (f *FabricInterface) throughputSeconds() {
 	}
 }
 
-//listenForCommits listens continuously for FabricCommitEvent and updates
+// listenForCommits listens continuously for FabricCommitEvent and updates
 // relevant fields whether if the transaction was valid or not
 // This functions is important because it forces synchronous access to the transactionInfo map.
 // A current problem with this implementation is that mainChannel receives more quickly than
@@ -212,7 +211,7 @@ func (f *FabricInterface) Start() {
 	go f.listenForCommits()
 }
 
-//ParseWorkload Handles the workload, converts the bytes to usable transactions.
+// ParseWorkload Handles the workload, converts the bytes to usable transactions.
 // This takes the worker's workload and transforms into transactions
 func (f *FabricInterface) ParseWorkload(workload workloadgenerators.WorkerThreadWorkload) ([][]interface{}, error) {
 
@@ -248,7 +247,6 @@ func (f *FabricInterface) ConnectOne(id int) error {
 }
 
 // ConnectAll connects to all nodes given in the hosts
-//
 func (f *FabricInterface) ConnectAll(primaryID int) error {
 	return nil
 }
@@ -257,7 +255,7 @@ func (f *FabricInterface) ConnectAll(primaryID int) error {
 // (NOT NEEDED IN FABRIC) Contract deployment is not something useful to
 // be benchmarked in a Hyperledger Fabric implementation as it is a permissioned
 // blockchain and contract deployment is something agreed upon by organisations and
-//not done regularly enough to hinder throughput (usually done during while low traffic)
+// not done regularly enough to hinder throughput (usually done during while low traffic)
 func (f *FabricInterface) DeploySmartContract(tx interface{}) (interface{}, error) {
 	return nil, nil
 }

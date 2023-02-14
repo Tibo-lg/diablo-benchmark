@@ -1,6 +1,5 @@
 package ndiem
 
-
 import (
 	"bufio"
 	"encoding/base64"
@@ -19,17 +18,16 @@ import (
 	"github.com/diem/client-sdk-go/diemtypes"
 )
 
-
 type moveCompiler struct {
-	logger   core.Logger
-	base     string
-	stdlibs  []string
+	logger  core.Logger
+	base    string
+	stdlibs []string
 }
 
 func newMoveCompiler(logger core.Logger, base string, stdlibs []string) *moveCompiler {
 	return &moveCompiler{
-		logger: logger,
-		base: base,
+		logger:  logger,
+		base:    base,
 		stdlibs: stdlibs,
 	}
 }
@@ -105,15 +103,15 @@ func (this *moveCompiler) compile(name string, owner *account) (*application, er
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &application{
-		logger: this.logger,
+		logger:     this.logger,
 		moduleCode: module,
-		ctorCode: ctor,
-		funcCodes: funcs,
-		parser: parser,
-		scanner: bufio.NewScanner(parser),
-		deployed: false,
+		ctorCode:   ctor,
+		funcCodes:  funcs,
+		parser:     parser,
+		scanner:    bufio.NewScanner(parser),
+		deployed:   false,
 	}, nil
 }
 
@@ -129,7 +127,7 @@ func (this *moveCompiler) compileSources(paths []string, owner *account) (string
 		return "", err
 	}
 
-	args = append(args, "--addresses", "Owner=0x" + getHexAddress(owner))
+	args = append(args, "--addresses", "Owner=0x"+getHexAddress(owner))
 	args = append(args, "--addresses", "Std=0x1")
 	for _, stdlib = range this.stdlibs {
 		args = append(args, "--dependency", stdlib)
@@ -159,7 +157,7 @@ func (this *moveCompiler) compileModule(path string, owner *account) ([]byte, er
 
 	defer os.RemoveAll(out)
 
-	return readFileIn(out + "/modules", ".mv")
+	return readFileIn(out+"/modules", ".mv")
 }
 
 func (this *moveCompiler) compileScript(module, script string, owner *account) ([]byte, error) {
@@ -173,7 +171,7 @@ func (this *moveCompiler) compileScript(module, script string, owner *account) (
 
 	defer os.RemoveAll(out)
 
-	return readFileIn(out + "/scripts", ".mv")
+	return readFileIn(out+"/scripts", ".mv")
 }
 
 func readFileIn(path, suffix string) ([]byte, error) {
@@ -227,18 +225,18 @@ func getHexAddress(acc *account) string {
 }
 
 type application struct {
-	logger      core.Logger
-	moduleCode  []byte
-	ctorCode    []byte
-	funcCodes   map[string][]byte
-	parser      *util.ServiceProcess
-	scanner     *bufio.Scanner
-	deployed    bool
+	logger     core.Logger
+	moduleCode []byte
+	ctorCode   []byte
+	funcCodes  map[string][]byte
+	parser     *util.ServiceProcess
+	scanner    *bufio.Scanner
+	deployed   bool
 }
 
 type applicationArguments struct {
-	funccode  []byte
-	funcargs  []diemtypes.TransactionArgument
+	funccode []byte
+	funcargs []diemtypes.TransactionArgument
 }
 
 func (this *application) arguments(function string, addr diemtypes.AccountAddress) (*applicationArguments, error) {
@@ -248,7 +246,7 @@ func (this *application) arguments(function string, addr diemtypes.AccountAddres
 	var err error
 	var ok bool
 
-	_, err = io.WriteString(this.parser, function + "\n")
+	_, err = io.WriteString(this.parser, function+"\n")
 	if err != nil {
 		return nil, err
 	}

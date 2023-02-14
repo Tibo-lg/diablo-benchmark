@@ -1,6 +1,5 @@
 package util
 
-
 import (
 	"encoding/binary"
 	"fmt"
@@ -8,7 +7,6 @@ import (
 	"math"
 	"unsafe"
 )
-
 
 type MonadOutput interface {
 	Write(interface{}) MonadOutput
@@ -26,23 +24,28 @@ type MonadOutput interface {
 	Error() error
 }
 
-
 func writeDispatch(output MonadOutput, val interface{}) MonadOutput {
 	switch val.(type) {
-	case uint8: return output.WriteUint8(val.(uint8))
-	case uint16: return output.WriteUint16(val.(uint16))
-	case uint32: return output.WriteUint32(val.(uint32))
-	case uint64: return output.WriteUint64(val.(uint64))
-	case []byte: return output.WriteBytes(val.([]byte))
-	case string: return output.WriteString(val.(string))
-	default: panic(fmt.Errorf("invalid type %T", val))
+	case uint8:
+		return output.WriteUint8(val.(uint8))
+	case uint16:
+		return output.WriteUint16(val.(uint16))
+	case uint32:
+		return output.WriteUint32(val.(uint32))
+	case uint64:
+		return output.WriteUint64(val.(uint64))
+	case []byte:
+		return output.WriteBytes(val.([]byte))
+	case string:
+		return output.WriteString(val.(string))
+	default:
+		panic(fmt.Errorf("invalid type %T", val))
 	}
 }
 
-
 type monadOutputWriter struct {
-	inner  io.Writer
-	order  binary.ByteOrder
+	inner io.Writer
+	order binary.ByteOrder
 }
 
 func NewMonadOutputWriter(dest io.Writer) *monadOutputWriter {
@@ -134,7 +137,6 @@ func (this *monadOutputWriter) Error() error {
 	return nil
 }
 
-
 type MonadInput interface {
 	Read(interface{}) MonadInput
 
@@ -151,14 +153,18 @@ type MonadInput interface {
 	Error() error
 }
 
-
 func readDispatch(input MonadInput, val interface{}) MonadInput {
 	switch val.(type) {
-	case *uint8: return input.ReadUint8(val.(*uint8))
-	case *uint16: return input.ReadUint16(val.(*uint16))
-	case *uint32: return input.ReadUint32(val.(*uint32))
-	case *uint64: return input.ReadUint64(val.(*uint64))
-	default: panic(fmt.Errorf("invalid type %T", val))
+	case *uint8:
+		return input.ReadUint8(val.(*uint8))
+	case *uint16:
+		return input.ReadUint16(val.(*uint16))
+	case *uint32:
+		return input.ReadUint32(val.(*uint32))
+	case *uint64:
+		return input.ReadUint64(val.(*uint64))
+	default:
+		panic(fmt.Errorf("invalid type %T", val))
 	}
 }
 
@@ -166,18 +172,29 @@ func readConvertFromUnsigned(ptr interface{}, val uint64) error {
 	var max uint64
 
 	switch ptr.(type) {
-	case *uint: max = math.MaxUint64
-	case *uint8: max = math.MaxUint8
-	case *uint16: max = math.MaxUint16
-	case *uint32: max = math.MaxUint32
-	case *uint64: max = math.MaxUint64
-	case *int: max = math.MaxInt64
-	case *int8: max = math.MaxInt8
-	case *int16: max = math.MaxInt16
-	case *int32: max = math.MaxInt32
-	case *int64: max = math.MaxInt64
-	default: return fmt.Errorf("invalid pointer type %T to store %v",
-		ptr, val)
+	case *uint:
+		max = math.MaxUint64
+	case *uint8:
+		max = math.MaxUint8
+	case *uint16:
+		max = math.MaxUint16
+	case *uint32:
+		max = math.MaxUint32
+	case *uint64:
+		max = math.MaxUint64
+	case *int:
+		max = math.MaxInt64
+	case *int8:
+		max = math.MaxInt8
+	case *int16:
+		max = math.MaxInt16
+	case *int32:
+		max = math.MaxInt32
+	case *int64:
+		max = math.MaxInt64
+	default:
+		return fmt.Errorf("invalid pointer type %T to store %v",
+			ptr, val)
 	}
 
 	if val > max {
@@ -186,17 +203,28 @@ func readConvertFromUnsigned(ptr interface{}, val uint64) error {
 	}
 
 	switch ptr.(type) {
-	case *uint: *(ptr.(*uint)) = uint(val)
-	case *uint8: *(ptr.(*uint8)) = uint8(val)
-	case *uint16: *(ptr.(*uint16)) = uint16(val)
-	case *uint32: *(ptr.(*uint32)) = uint32(val)
-	case *uint64: *(ptr.(*uint64)) = uint64(val)
-	case *int: *(ptr.(*int)) = int(val)
-	case *int8: *(ptr.(*int8)) = int8(val)
-	case *int16: *(ptr.(*int16)) = int16(val)
-	case *int32: *(ptr.(*int32)) = int32(val)
-	case *int64: *(ptr.(*int64)) = int64(val)
-	default: panic("dead code")
+	case *uint:
+		*(ptr.(*uint)) = uint(val)
+	case *uint8:
+		*(ptr.(*uint8)) = uint8(val)
+	case *uint16:
+		*(ptr.(*uint16)) = uint16(val)
+	case *uint32:
+		*(ptr.(*uint32)) = uint32(val)
+	case *uint64:
+		*(ptr.(*uint64)) = uint64(val)
+	case *int:
+		*(ptr.(*int)) = int(val)
+	case *int8:
+		*(ptr.(*int8)) = int8(val)
+	case *int16:
+		*(ptr.(*int16)) = int16(val)
+	case *int32:
+		*(ptr.(*int32)) = int32(val)
+	case *int64:
+		*(ptr.(*int64)) = int64(val)
+	default:
+		panic("dead code")
 	}
 
 	return nil
@@ -206,20 +234,24 @@ func readConvert(ptr interface{}, val interface{}) error {
 	var uval uint64
 
 	switch val.(type) {
-	case uint8: uval = uint64(val.(uint8))
-	case uint16: uval = uint64(val.(uint16))
-	case uint32: uval = uint64(val.(uint32))
-	case uint64: uval = val.(uint64)
-	default: panic("unknown value type")
+	case uint8:
+		uval = uint64(val.(uint8))
+	case uint16:
+		uval = uint64(val.(uint16))
+	case uint32:
+		uval = uint64(val.(uint32))
+	case uint64:
+		uval = val.(uint64)
+	default:
+		panic("unknown value type")
 	}
 
 	return readConvertFromUnsigned(ptr, uval)
 }
 
-
 type monadInputReader struct {
-	inner  io.Reader
-	order  binary.ByteOrder
+	inner io.Reader
+	order binary.ByteOrder
 }
 
 func NewMonadInputReader(src io.Reader) *monadInputReader {
@@ -342,9 +374,8 @@ func (this *monadInputReader) Error() error {
 	return nil
 }
 
-
 type monadError struct {
-	inner  error
+	inner error
 }
 
 func NewMonadError(err error) *monadError {
@@ -417,7 +448,6 @@ func (this *monadError) Error() error {
 	return this.inner
 }
 
-
 var _nativeByteOrderMemoized binary.ByteOrder = nil
 
 func _nativeByteOrder() binary.ByteOrder {
@@ -439,4 +469,3 @@ func nativeByteOrder() binary.ByteOrder {
 
 	return _nativeByteOrderMemoized
 }
-

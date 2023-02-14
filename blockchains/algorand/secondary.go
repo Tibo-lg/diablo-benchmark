@@ -1,6 +1,5 @@
 package algorand
 
-
 import (
 	"time"
 
@@ -10,29 +9,27 @@ import (
 	"diablo-benchmark/core/results"
 )
 
-
 type submitEvent struct {
-	index  int
-	when   time.Time
+	index int
+	when  time.Time
 }
 
 type commitEvent struct {
-	index  int
-	when   time.Time
+	index int
+	when  time.Time
 }
 
 type Secondary struct {
-	chainConfig   *configs.ChainConfig          // (half-)parsed chain.yaml
-	blockchain    *Blockchain             // interface to actual blockchain
-	transactions  []transaction                     // transactions to send
-	uidmap        map[int]int               // uid -> index of transactions
-	pollBlocks    bool            // get committed transactions from blocks
-	notifySubmit  chan submitEvent
-	notifyCommit  chan commitEvent
-	notifyStop    chan bool
-	resultsChan   chan *results.EventLog
+	chainConfig  *configs.ChainConfig // (half-)parsed chain.yaml
+	blockchain   *Blockchain          // interface to actual blockchain
+	transactions []transaction        // transactions to send
+	uidmap       map[int]int          // uid -> index of transactions
+	pollBlocks   bool                 // get committed transactions from blocks
+	notifySubmit chan submitEvent
+	notifyCommit chan commitEvent
+	notifyStop   chan bool
+	resultsChan  chan *results.EventLog
 }
-
 
 func NewWorker() *Secondary {
 	return &Secondary{}
@@ -64,7 +61,6 @@ func (this *Secondary) Init(c *configs.ChainConfig) error {
 	return nil
 }
 
-
 func (this *Secondary) ParseWorkload(workload [][]byte) error {
 	var err error
 	var i int
@@ -84,7 +80,6 @@ func (this *Secondary) ParseWorkload(workload [][]byte) error {
 	return nil
 }
 
-
 func (this *Secondary) StartBenchmark() error {
 	var now time.Time = time.Now()
 
@@ -103,7 +98,6 @@ func (this *Secondary) StopBenchmark() error {
 	return nil
 }
 
-
 func (this *Secondary) collectEvents(start time.Time) {
 	var submits []int64 = make([]int64, len(this.transactions))
 	var commits []int64 = make([]int64, len(this.transactions))
@@ -116,7 +110,8 @@ func (this *Secondary) collectEvents(start time.Time) {
 		commits[i] = -1
 	}
 
-	loop: for {
+loop:
+	for {
 		select {
 		case se = <-this.notifySubmit:
 			submits[se.index] = se.when.Sub(start).Milliseconds()
@@ -138,7 +133,8 @@ func (this *Secondary) pollTransactions() {
 	var err error
 	var uid int
 
-	loop: for {
+loop:
+	for {
 		select {
 		case <-this.notifyStop:
 			break loop
@@ -156,8 +152,8 @@ func (this *Secondary) pollTransactions() {
 			for _, note = range notes {
 				uid = getUidFromTransactionNote(note)
 				this.notifyCommit <- commitEvent{
-					index:  this.uidmap[uid],
-					when:   now,
+					index: this.uidmap[uid],
+					when:  now,
 				}
 			}
 		}
@@ -177,8 +173,8 @@ func (this *Secondary) waitTransaction(index int, txid string) {
 	}
 
 	this.notifyCommit <- commitEvent{
-		index:  index,
-		when:   now,
+		index: index,
+		when:  now,
 	}
 }
 
@@ -204,15 +200,14 @@ func (this *Secondary) SendTransaction(index int) error {
 
 	now = time.Now()
 	this.notifySubmit <- submitEvent{
-		index:  index,
-		when:   now,
+		index: index,
+		when:  now,
 	}
 
 	go this.sendTransaction(index, tx)
 
 	return nil
 }
-
 
 func (this *Secondary) computeResults(submits, commits []int64) *results.EventLog {
 	var ret *results.EventLog = results.NewEventLog()
