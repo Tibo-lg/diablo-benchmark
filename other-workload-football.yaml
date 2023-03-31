@@ -1,0 +1,23 @@
+let:
+  - !loop &loc { sample: !location [ ".*" ] }
+  - &end { sample: !endpoint [ ".*" ] }
+  - !loop &acc { sample: !account { number: 10, stake: 1000 } }
+
+  - &contract
+    sample: !contract
+      number: 1
+      name: "counter"
+
+workloads:
+  - number: 1
+    client:
+      location: *loc
+      view: *end
+      behavior:
+        - load:
+            0: 10
+            30: 0
+          interaction: !invoke
+            from: *acc
+            contract: *contract
+            function: "Add()"

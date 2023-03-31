@@ -6,6 +6,9 @@ localImplementation/log.txt
 localImplementation/*.tar.gz
 diablo
 
+.go
+**build/
+
 wallet/
 
 **/combined.json
